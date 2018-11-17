@@ -17,21 +17,38 @@ TFormula::TFormula (char* form) {
 }
 
 int TFormula::FormulaChecker(int Brackets[], int size) {
-    delete[] Brackets;
-    Brackets = new int {0};
-    size = 0;
-    while (Formula[size]) {
-        if (Formula[size] == '(')
-            ++Brackets[0];
-        else if (Formula[size] == ')')
-            --Brackets[0];
-        if (Brackets[0] < 0)
-            return 0;
-        ++size;
+    for (int i = 0; i < size; ++i)
+        Brackets[i] = 0;
+    char* ptr = Formula;
+    while (*ptr) ++ptr;
+    int len = ptr - Formula;
+    TStack s(MaxLen);
+    int index = 1;
+    for (int i = 0; i < len; ++i) {
+        if (Formula[i] == '(') {
+            s.Put(index);
+            Brackets[index] = -1;
+            ++index;
+        }
+        else if (Formula[i] == ')') {
+            if (s.IsEmpty()) {
+                Brackets[index] = -1;
+            }
+            else {
+                Brackets[s.Get()] = Brackets[index] = index;
+            }
+            ++index;
+        }
+        if (index > size)
+            throw -1;
     }
-    if (Brackets[0] != 0)
-        return 0;
-    return 1;
+    while (!s.IsEmpty())
+        Brackets[s.Get()] = -1;
+    int errors = 0;
+    for (int i = 0; i < size; ++i)
+        if (Brackets[i] == -1)
+            ++errors;
+    return errors;
 }
 
 int priority(char c) {
@@ -54,7 +71,8 @@ int TFormula::FormulaConverter() {
         if (!(Formula[i] >= '0' && Formula[i] <= '9') && !isOperator(Formula[i])
             && Formula[i] != ' ' && Formula[i] != '.' && Formula[i] != '(' && Formula[i] != ')')
             throw 8;
-    if (!FormulaChecker(nullptr, 0))
+    int chk[MaxLen];
+    if (FormulaChecker(chk, MaxLen))
         throw 10;
     TStack s(MaxLen);
     int index = 0;
