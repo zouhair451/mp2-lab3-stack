@@ -23,8 +23,8 @@ TFormula::TFormula(std::string form)
 	lenghtPostfixForm = 0;
 	if (lenghtFormula != 0)
 	{
-		strcpy_s(Formula, (char*)form.c_str());
-		strcpy_s(PostfixForm, "");
+		strcpy(Formula, (char*)form.c_str());
+		strcpy(PostfixForm, "");
 	}
 	else
 		throw "Formula is empty!";
