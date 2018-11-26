@@ -1,6 +1,6 @@
 #include<gtest.h>
-#include"../include/tstack.h"
-#include"../include/tformula.h"
+#include"tstack.h"
+#include"tformula.h"
 TEST(TStack, can_create_stack_with_positive_length)
 {
 	ASSERT_NO_THROW(TStack(5));

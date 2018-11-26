@@ -1,7 +1,8 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include<cstring>
 #include<iostream>
-#include "../include/tformula.h"
-#include"../include/tstack.h"
+#include "tformula.h"
+#include"tstack.h"
 
 TFormula::TFormula(char * form)
 {
@@ -9,8 +10,8 @@ TFormula::TFormula(char * form)
 	lenghtPostfixForm = 0;
 	if (form != nullptr && lenghtFormula != 0)
 	{
-		strcpy_s(Formula, form);
-		strcpy_s(PostfixForm, "");
+		strcpy(Formula, form);
+		strcpy(PostfixForm, "");
 	}
 	else
 		throw "Formula is empty!";

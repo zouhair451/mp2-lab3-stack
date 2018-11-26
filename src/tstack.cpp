@@ -1,5 +1,5 @@
 #include<iostream>
-#include "..\include\tstack.h"
+#include "tstack.h"
 
 TStack::TStack(int len) :TDataRoot(len)
 {
