@@ -1,4 +1,4 @@
-// ННГУ, ВМК, Курс "Методы программирования-2", С++, ООП
+﻿// ННГУ, ВМК, Курс "Методы программирования-2", С++, ООП
 //
 // Copyright (c) Гергель В.П. 28.07.2000
 //   Переработано для Microsoft Visual Studio 2008 Сысоевым А.В. (21.04.2015)
@@ -7,12 +7,15 @@
 
 #include <iostream>
 #include "tstack.h"
-
+#include "tformula.h"
+#include <stdlib.h>
+#include <cstdio>
+#include <string.h>
 using namespace std;
 
 int main()
 {
-  TStack st(2);
+   Stack st(2);
   int temp;
 
   setlocale(LC_ALL, "Russian");
@@ -27,5 +30,6 @@ int main()
     temp = st.Get();
     cout << "Взяли значение " << temp << " Код " << st.GetRetCode() << endl;
   }
+  system("pause");
   return 0;
 }

@@ -1,16 +1,19 @@
+#ifndef __STACK_H__
+#define __STACK_H__
+
 #include "tdataroot.h"
 
-class TStack :public TDataRoot
+class Stack:public TDataRoot
 {
-private:
-	int top; 
+protected:
+    int top;
+    virtual int GetNextIndex (int index);
 public:
-    TStack(int Size = DefMemSize);
-    ~TStack() {};
-	void Put(const TData &Val); 
-	TData Get();
-	virtual TData TopElem(); 
-
-	int IsValid();
-    void Print();
+    virtual void Print();
+    virtual int IsValid();
+    Stack (int Size =  DefMemSize ) : TDataRoot(Size) {top=-1;};
+    virtual TData TopElem();
+    virtual void Put(const TData&Val);
+    virtual TData Get();
 };
+#endif
