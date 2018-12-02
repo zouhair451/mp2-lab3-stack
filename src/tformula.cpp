@@ -8,6 +8,7 @@
 int op_prior(char);
 bool piece_of_number(char);
 bool must_operator_push(const TStack &, int);
+bool must_operator_get(const TStack &, int);
 
 TFormula::TFormula(char *form)
 {
@@ -75,25 +76,27 @@ int TFormula::FormulaConverter()
     int prior = op_prior(*pCh);
 
     if (prior == -2)
-      continue;       //РµСЃР»Рё РІСЃС‚СЂРµС‡Р°РµРј РїСЂРѕР±РµР» РІ РёСЃС…РѕРґРЅРѕР№ СЃС‚СЂРѕРєРµ - РµРґРµРј РґР°Р»СЊС€Рµ
+      continue;       //если встречаем пробел в исходной строке - едем дальше
 
     if (prior == 2 || prior == 3)
-      PostfixForm[index++] = ' ';    //СЂР°Р·РґРµР»СЏРµРј РѕРїРµСЂР°РЅРґС‹ РїСЂРѕР±РµР»РѕРј РІ РІС‹С…РѕРґРЅРѕР№ СЃС‚СЂРѕРєРµ
+      PostfixForm[index++] = ' ';    //разделяем операнды пробелом в выходной строке
 
-    if (*pCh == ')')          //РѕР±СЂР°Р±РѕС‚РєР° Р·Р°РєСЂС‹РІР°СЋС‰РµР№ СЃРєРѕР±РєРё
+    if (*pCh == ')')          //обработка закрывающей скобки
     {
       while (st.TopElem() != '(')
-        PostfixForm[index++] = st.Get();  //РІС‹РїРёСЃС‹РІР°РµРј РІСЃРµ РѕРїРµСЂР°С‚РѕСЂС‹ РёР· СЃС‚РµРєР° РґРѕ РѕС‚РєСЂС‹РІР°СЋС‰РµР№ СЃРєРѕР±РєРё
-      st.Get();        //РІС‹С‚Р°Р»РєРёРІР°РµРј СЃР°РјСѓ СЃРєРѕР±РєСѓ
+        PostfixForm[index++] = st.Get();  //выписываем все операторы из стека до открывающей скобки
+      st.Get();        //выталкиваем саму скобку
     }
     else if (prior == -1)
-      PostfixForm[index++] = *pCh;    //Р·Р°РїРёСЃС‹РІР°РµРј РѕРїРµСЂР°РЅРґ РІ РІС‹С…РѕРґРЅСѓСЋ СЃС‚СЂРѕРєСѓ
+      PostfixForm[index++] = *pCh;    //записываем операнд в выходную строку
     else if (must_operator_push(st, prior))
-      st.Put(*pCh);                   //РїСѓС€РёРј РѕРїРµСЂР°С‚РѕСЂ РІ СЃС‚РµРє
+    {
+      st.Put(*pCh);                   //пушим оператор в стек
+    }
     else
     {
-      while (op_prior(st.TopElem()) >= prior)
-        PostfixForm[index++] = st.Get();     //РґРѕСЃС‚Р°РµРј РёР· СЃС‚РµРєР° РѕРїРµСЂР°С‚РѕСЂС‹, РїРѕРєР° РїСЂРёРѕСЂРёС‚РµС‚ Р±РѕР»СЊС€Рµ Р»РёР±Рѕ СЂР°РІРµРЅ С‚РµРєСѓС‰РµРјСѓ
+      while (must_operator_get(st, prior))
+        PostfixForm[index++] = st.Get();     //достаем из стека операторы, пока приоритет больше либо равен текущему
       st.Put(*pCh);
     }
 
@@ -112,6 +115,9 @@ double TFormula::FormulaCalculator()
 
   do
   {
+    if (op_prior(*pCh) == -2)
+      continue;
+
     if (piece_of_number(*pCh))
     {
       std::vector<char> tmpV;
@@ -200,5 +206,14 @@ bool must_operator_push(const TStack &st, int prior)
   if (!st.IsEmpty())
     if (op_prior(st.TopElem()) < prior)
       return true;
+  return false;
+}
+
+bool must_operator_get(const TStack &st, int prior)
+{
+  if (st.IsEmpty())
+    return false;
+  else if (op_prior(st.TopElem()) >= prior)
+    return true;
   return false;
 }
