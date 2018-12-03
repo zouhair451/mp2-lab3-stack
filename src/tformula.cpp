@@ -2,18 +2,19 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <cstring>
 #include "tformula.h"
 #include "tstack.h"
 
 TFormula::TFormula(const char* form)
 {
-    formulaLength = strlen(form);
+    formulaLength = std::strlen(form);
     postfixFormulaLength = 0;
 
     if (formulaLength == 0) 
         throw std::range_error("Unexpected formula length");
 
-    strcpy(Formula, form);
+    std::strcpy(Formula, form);
 }
 
 int TFormula::FormulaChecker(int* Brackets, int size)
