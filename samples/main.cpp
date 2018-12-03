@@ -7,25 +7,29 @@
 
 #include <iostream>
 #include "tstack.h"
+#include "tformula.h"
 
 using namespace std;
 
 int main()
 {
-  TStack st(2);
+  /*TStack st(2);
   int temp;
 
-  setlocale(LC_ALL, "Russian");
-  cout << "Тестирование программ поддержки структуры типа стека" << endl;
+  cout << "Stack testing" << endl;
   for (int i = 0; i < 35; i++)
   {
     st.Put(i);
-    cout << "Положили значение " << i << " Код " << st.GetRetCode() << endl;
+    cout << "Put " << i << " Code " << st.GetRetCode() << endl;
   }
   while (!st.IsEmpty())
   {
     temp = st.Get();
-    cout << "Взяли значение " << temp << " Код " << st.GetRetCode() << endl;
-  }
+    cout << "Got " << temp << " Code " << st.GetRetCode() << endl;
+  }*/
+
+  TFormula formula("((3+4)*6-1*(4-6))-5");
+  formula.FormulaCalculator();
+  system("pause");
   return 0;
 }
