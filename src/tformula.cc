@@ -93,7 +93,7 @@ int TFormula::FormulaConverter()
 
 double TFormula::FormulaCalculator()
 {
-  int* Brackets = new int[formulaLength * 2];
+  int* Brackets = new int[formulaLength * 2]{};
 
   if (FormulaChecker(Brackets, formulaLength * 2) != 0)
   {

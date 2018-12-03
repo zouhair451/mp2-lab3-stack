@@ -25,7 +25,7 @@ TDataRoot::TDataRoot(int Size): TDataCom()
   }
   else // память выделяется объектом
   {
-    pMem = new TElem[MemSize]{ 0 };
+    pMem = new TElem[MemSize]{};
     MemType = MEM_HOLDER;
   }
 } /*-------------------------------------------------------------------------*/

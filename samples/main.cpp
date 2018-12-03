@@ -13,7 +13,7 @@ using namespace std;
 
 int main()
 {
-  /*TStack st(2);
+  TStack st(2);
   int temp;
 
   cout << "Stack testing" << endl;
@@ -26,10 +26,9 @@ int main()
   {
     temp = st.Get();
     cout << "Got " << temp << " Code " << st.GetRetCode() << endl;
-  }*/
+  }
 
   TFormula formula("((3+4)*6-1*(4-6))-5");
   formula.FormulaCalculator();
-  system("pause");
   return 0;
 }
