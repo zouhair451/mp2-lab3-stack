@@ -12,12 +12,13 @@ void TStack::Put(const TData &Val)
 {
     if(pMem == NULL)
         SetRetCode(DataNoMem);
-    else if(IsEmpty())
-        SetRetCode(DataEmpty);
     else if(IsFull())
         SetRetCode(DataFull);
     else
+    {
         pMem[++top] = Val;
+        ++DataCount;
+    }
 }
 
 TData TStack::Get()
@@ -28,7 +29,10 @@ TData TStack::Get()
     else if(IsEmpty())
         SetRetCode(DataEmpty);
     else
-        TData tmp = pMem[top--];
+    {
+       tmp = pMem[top--];
+       --DataCount;
+    }
     return tmp;
 }
 
