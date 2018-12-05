@@ -10,7 +10,7 @@ int Get_Pr(char c) //приоритет операции
 	if (c == '*' || c == '/') return 3;
 }
 
-bool is_op(char c) //пседопроверка на операнд
+bool is_op(char c) //псевдопроверка на операнд
 {
 	int t = Get_Pr(c) / 4;
 	if (t == 0 && c != '.') return false;
