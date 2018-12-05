@@ -2,6 +2,7 @@
 #include "tstack.h"
 #include "tformula.h"
 #include "Stack_double.h"
+#include <string.h>
 
 TFormula::TFormula(char * form)
 {
@@ -62,19 +63,19 @@ int TFormula::FormulaChecker(int Brackets[], int size)
 int TFormula::FormulaConverter() 
 {
 	TStack prior(MaxLen);
-	int j = 0; // ñ÷åò÷èê äëÿ PostfixForm[MaxLen]
+	int j = 0; // Ã±Ã·Ã¥Ã²Ã·Ã¨Ãª Ã¤Ã«Ã¿ PostfixForm[MaxLen]
 	int tmp[MaxLen];
 	if (FormulaChecker(tmp, MaxLen) != 0) 
 	{ 
 		return 1;
 		throw "Wrong brackets"; 
 	}
-	// ïðèîðèòåòû
+	// Ã¯Ã°Ã¨Ã®Ã°Ã¨Ã²Ã¥Ã²Ã»
 	// ( - 0 (40)
 	// ) - 1 (41)
 	// +(43) -(45) - 2
 	// *(42) /(47) - 3
-	// ó íàñ òóò äâà ñëó÷àÿ: êîãäà ÷èñëî èëè êîãäà îïåðàöèÿ
+	// Ã³ Ã­Ã Ã± Ã²Ã³Ã² Ã¤Ã¢Ã  Ã±Ã«Ã³Ã·Ã Ã¿: ÃªÃ®Ã£Ã¤Ã  Ã·Ã¨Ã±Ã«Ã® Ã¨Ã«Ã¨ ÃªÃ®Ã£Ã¤Ã  Ã®Ã¯Ã¥Ã°Ã Ã¶Ã¨Ã¿
 	int pr[48] = {-1};
 	pr[40] = 0;
 	pr[41] = 1;
@@ -96,10 +97,10 @@ int TFormula::FormulaConverter()
 		{
 			while (prior.TopElem() != '(')
 			{
-				PostfixForm[j++] = prior.Get(); //âûòàëêèâàåì âñå îïåðàòîðû èç ñòåêà
+				PostfixForm[j++] = prior.Get(); //Ã¢Ã»Ã²Ã Ã«ÃªÃ¨Ã¢Ã Ã¥Ã¬ Ã¢Ã±Ã¥ Ã®Ã¯Ã¥Ã°Ã Ã²Ã®Ã°Ã» Ã¨Ã§ Ã±Ã²Ã¥ÃªÃ 
 				PostfixForm[j++] = ' ';
 			}
-			prior.Get(); // âûòàëêèâàåì è ñàìó ñêîáêó
+			prior.Get(); // Ã¢Ã»Ã²Ã Ã«ÃªÃ¨Ã¢Ã Ã¥Ã¬ Ã¨ Ã±Ã Ã¬Ã³ Ã±ÃªÃ®Ã¡ÃªÃ³
 		} 
 		else if ((Formula[i] == '(') || prior.IsEmpty() || (pr[Formula[i]] > pr[prior.TopElem()]))
 		{
