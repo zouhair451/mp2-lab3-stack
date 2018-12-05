@@ -142,3 +142,132 @@ TEST(TStack, can_topelem_true_value)
 
 // тестируем tformula
 
+TEST(TFormula, can_create_formula)
+{
+	char* s = "2+3";
+
+	ASSERT_NO_THROW(TFormula f(s));
+}
+
+TEST(TFormula, check_true_brackets)
+{
+	char* s1 = "()()";
+	char* s2 = "(())";
+
+	int br1[4] = { 0 };
+	int br2[4] = { 0 };
+
+	TFormula f1(s1);
+	TFormula f2(s2);
+
+	EXPECT_EQ(0, f1.FormulaChecker(br1, 4));
+	EXPECT_EQ(0, f2.FormulaChecker(br2, 4));
+}
+
+TEST(TFormula, check_true_brackets_in_formula)
+{
+	char* s = "(2+3)/8*(4/(5-7))";
+	TFormula f(s);
+
+	int br[6] = { 0 };
+
+	EXPECT_EQ(0, f.FormulaChecker(br, 6));
+}
+
+TEST(TFormula, check_wrong_brackets)
+{
+	char* c = "((()";
+	TFormula f(c);
+
+	int br[6] = { 0 };
+
+	EXPECT_NE(0, f.FormulaChecker(br, 6));
+}
+
+TEST(TFormula, check_wrong_brackets_in_formula)
+{
+	char* s = "((2+3)/8*(4/(5-7))";
+	TFormula f(s);
+
+	int br[8] = { 0 };
+
+	EXPECT_NE
+(0, f.FormulaChecker(br, 8));
+}
+
+TEST(TFormula, cant_convert_formula_with_wrong_brackets)
+{
+	char* s = "((2+3)/8*(4/(5-7))";
+	TFormula f(s);
+
+	ASSERT_ANY_THROW(f.FormulaConverter());
+
+}
+
+TEST(TFormula, can_convert_formula_with_true_brackets)
+{
+	char* s = "(2+3)/8*(4/(5-7))";
+	TFormula f(s);
+
+	ASSERT_NO_THROW(f.FormulaConverter());
+}
+
+TEST(TFormula, can_add)
+{
+	char* s = "2+5+6";
+	TFormula f(s);
+
+	f.FormulaConverter();
+
+	EXPECT_EQ(13, f.FormulaCalculator());
+}
+
+TEST(TFormula, can_subtract)
+{
+	char* s = "2-5-6";
+	TFormula f(s);
+
+	f.FormulaConverter();
+
+	EXPECT_EQ(-9, f.FormulaCalculator());
+}
+
+TEST(TFormula, can_multiply)
+{
+	char* s = "2*5*6";
+	TFormula f(s);
+
+	f.FormulaConverter();
+
+	EXPECT_EQ(60, f.FormulaCalculator());
+}
+
+TEST(TFormula, can_divide)
+{
+	char* s = "2*6/3";
+	TFormula f(s);
+
+	f.FormulaConverter();
+
+	EXPECT_EQ(4, f.FormulaCalculator());
+}
+
+TEST(TFormula, can_calculate_difficult_formula_with_brackets)
+{
+	char* c = "2+(4*3-5+9)/8";//4
+	TFormula f(c);
+	
+	f.FormulaConverter();
+
+	EXPECT_EQ(4, f.FormulaCalculator());
+}
+
+TEST(TFormula, calculate_with_fractions)
+{
+	char* c = "2.5+(4*3.5-5+9)/2";//11.5
+	TFormula f(c);
+
+	f.FormulaConverter();
+
+	EXPECT_DOUBLE_EQ(11.5, f.FormulaCalculator());
+}
