@@ -1,3 +1,6 @@
+#pragma once
+#include "tstack.h"
+
 const int MaxLen=255;
 
 class TFormula
@@ -8,10 +11,9 @@ class TFormula
      int formulaLength;
      int postfixFormulaLength;
    public:
-     TFormula(const char *form);                            // конструктор
-     int FormulaChecker(int* Brackets,int size);     // проверка корректности скобок
+     TFormula(const char *form);                      // конструктор
+     int FormulaChecker(int* Brackets);      // проверка корректности скобок
      int FormulaConverter();                          // преобразование в постфиксную форму
      double FormulaCalculator();                      // вычисление формулы
-
-     friend int Priority(char sign);
+     int Priority(char sign);                         // приоритет операции
 };

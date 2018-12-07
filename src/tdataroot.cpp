@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <stdexcept>
-#include "../include/tdataroot.h"
+#include "tdataroot.h"
 
 TDataRoot::TDataRoot(int Size): TDataCom()
 {

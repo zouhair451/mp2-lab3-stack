@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <cstring>
 #include "tformula.h"
-#include "tstack.h"
 
 TFormula::TFormula(const char* form)
 {
@@ -17,7 +16,7 @@ TFormula::TFormula(const char* form)
     std::strcpy(Formula, form);
 }
 
-int TFormula::FormulaChecker(int* Brackets, int size)
+int TFormula::FormulaChecker(int* Brackets)
 {
   TStack stack(formulaLength);
   int bracketsCount = 0;
@@ -89,29 +88,74 @@ int TFormula::FormulaChecker(int* Brackets, int size)
 
 int TFormula::FormulaConverter()
 {
-  return -1;
+  TStack stack(formulaLength);
+
+  for (auto i = 0; i < formulaLength; i++)
+  {
+    if (isdigit(Formula[i]))
+    {
+      PostfixForm[postfixFormulaLength++] = Formula[i];
+    }
+    else  if (Formula[i] != ')')
+          {
+            if ((!stack.IsEmpty() && (Priority(Formula[i]) == 0 || 
+            Priority(Formula[i]) > Priority(stack.TopElem()))) || 
+            stack.IsEmpty())
+              stack.Put(Formula[i]);
+            
+            else
+            {
+              while (!stack.IsEmpty() && Priority(stack.TopElem()) >= Priority(Formula[i]))
+                PostfixForm[postfixFormulaLength++] = stack.Get();
+              
+              stack.Put(Formula[i]);
+            }
+          }
+          else
+          {
+            while (!stack.IsEmpty() && Priority(stack.TopElem()) != Priority('('))
+              PostfixForm[postfixFormulaLength++] = stack.Get();
+
+            stack.Get();
+          }
+    }
+
+  while (!stack.IsEmpty())
+    PostfixForm[postfixFormulaLength++] = stack.Get();
+
+  std::cout << "\t Postfix formula: ";
+
+  for (auto i = 0; i < postfixFormulaLength; i++)
+  {
+    std::cout << PostfixForm[i];
+  }
+  std::cout << std::endl;
+  return 0;
 }
 
 double TFormula::FormulaCalculator()
 {
   int* Brackets = new int[formulaLength * 2]{};
 
-  if (FormulaChecker(Brackets, formulaLength * 2) != 0)
+  if (FormulaChecker(Brackets) != 0)
   {
     throw std::logic_error("Incorrect formula");
     return -1;
   }
 
+  FormulaConverter();
+
   return 0;
 }
 
-int Priority(char sign)
+int TFormula::Priority(char sign)
 {
   switch (sign)
   {
     case '(' : return 0;
     case ')' : return 1;
-    case '+' || '-' :  return 2;
+    case '+' : return 2;
+    case '-' : return 2;
     case '*' : return 3;
     case '/' : return 3;
     default : return -1;
