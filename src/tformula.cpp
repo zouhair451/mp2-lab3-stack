@@ -4,7 +4,7 @@
 
 using namespace std;
 
-TFormula::TFormula(char *form)
+TFormula::TFormula(const char *form)
 {
     int i = 0;
     while(form[i])
@@ -25,6 +25,9 @@ int TFormula::FormulaChecker(int Brackets[], int size)
     int i = 0;
     while(Formula[i])
     {
+        if(!(Formula[i]>='0' && Formula[i] <= '9') && Formula[i] != '.' && Formula[i] != '(' && Formula[i] != ')' && Formula[i] != '+'
+            && Formula[i] != '-' && Formula[i] != '*' && Formula[i] != '/' && Formula[i] != ' ')
+            throw -1;
         if(Formula[i] == '(')
         {
             ++k;
@@ -62,6 +65,7 @@ int TFormula::FormulaConverter()
         if(Brackets[i] == -1)
             throw -1;
     }
+    i = 0;
     TStack st1(260), st2(260);
     while(Formula[i])
     {
@@ -138,7 +142,6 @@ int TFormula::FormulaConverter()
             PostfixForm[id++] = k;
     }
     PostfixForm[id++] = '\0';
-    cout<<Formula<<" "<<PostfixForm<<"\n";
     return id;
 }
 
@@ -160,22 +163,8 @@ double TFormula::FormulaCalculator()
         }
         double t1 = DoubleStack[top--];
         double t2 = DoubleStack[top--];
-//        cout<<top<<" "<<t1<<" "<<t2<<" "<<PostfixForm[i]<<" ";
-//        switch(PostfixForm[i])
-//        {
-//            case '+':
-//                cout<<t1+t2<<"\n";
-//                break;
-//            case '-':
-//                cout<<t1-t2<<"\n";
-//                break;
-//            case '*':
-//                cout<<t1*t2<<"\n";
-//                break;
-//            case '/':
-//                cout<<t1/t2<<"\n";
-//                break;
-//        }
+        if(top < -1)
+            throw -1;
         switch(PostfixForm[i])
         {
             case '+':
@@ -193,5 +182,7 @@ double TFormula::FormulaCalculator()
         }
         i++;
     }
+    if(top != 0)
+        throw -1;
     return DoubleStack[top];
 }

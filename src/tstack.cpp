@@ -39,9 +39,15 @@ TData TStack::Get()
 TData TStack::TopElem()
 {
     if(pMem == NULL)
+    {
         SetRetCode(DataNoMem);
+        return -1;
+    }
     else if(IsEmpty())
+    {
         SetRetCode(DataEmpty);
+        return -1;
+    }
     else
         return pMem[top];
 }
