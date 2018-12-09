@@ -7,7 +7,7 @@
 
 TFormula :: TFormula (char *form)                            // конструктор
 {
-	int size = strlen(form);
+	int size = strlen(form)+1;
 	if (size>=MaxLen) throw -1;
 	for (int i=0; i<size; i++)
 		Formula[i] = form[i];
@@ -15,28 +15,43 @@ TFormula :: TFormula (char *form)                            // конструктор
 
 int TFormula :: FormulaChecker(int Brackets[],int size)     // проверка корректности скобок
 {
-	TStack st(size);
-	for (int i=0; i<size; i++)
+
+	int s = 0;
+	while (Formula[s] != '=') s++;
+
+	TStack st(s);
+
+	for (int i=0; i<s; i++)
 	{
-		if (Formula[i]=='(') st.Put(i);
-		if (Formula[i]==')') st.Get();
+		if (Formula[i]=='(') 
+			st.Put(i);
+		if (Formula[i]==')') 
+		{
+			if (st.IsEmpty()) return 0;
+			st.Get();
+		}
 	}
-	if (st.IsEmpty()) return 1;
-	else return 0;
+	if (st.IsEmpty()) 
+		return 1;
+	else 
+		return 0;
 }
 
 int TFormula :: FormulaConverter()                          // преобразование в постфиксную форму
 {
-	int size = 0;
-	int ind = 0;
-	while (Formula[ind] != '=') { size++; ind++;}
-	TStack st(size);
+	int ch[MaxLen];
+    if (FormulaChecker(ch, MaxLen)==0)
+        throw -1;
+
+	int s = 0;
+	while (Formula[s] != '=') s++;
+	TStack st(s);
 
 	int Index = 0; //Длина постфиксной формы
 	int Priority = -1;		//Приоритет операции
 	int PriorityStackOp = -1; //Приоритет последней операции в стеке
 
-	for (int i=0; i<size; i++)
+	for (int i=0; i<s; i++)
 	{
 		if ((Formula[i] >= '0')&&(Formula[i] <= '9')||(Formula[i] == '.'))
 		{
@@ -57,7 +72,7 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 					Priority = 2;
 					if (Priority<=PriorityStackOp)									//если меньше или равен
 					{
-						while (!st.IsEmpty())
+						while (Priority<=PriorityStackOp)
 						{
 							PostfixForm[Index] = st.Get();
 							std::cout<<PostfixForm[Index];
@@ -65,6 +80,12 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 							PostfixForm[Index] = ' ';
 							std::cout<<PostfixForm[Index];
 							Index++;
+							if (!st.IsEmpty()) {
+								if ((st.TopElem()=='*')||(st.TopElem()=='/')) PriorityStackOp = 3;
+								if ((st.TopElem()=='+')||(st.TopElem()=='-')) PriorityStackOp = 2;
+								if (st.TopElem()=='(') PriorityStackOp = 0;
+							}
+							if (st.IsEmpty()) break;
 						}
 					}
 					if ((st.IsEmpty())||(Priority>PriorityStackOp))					//если больше
@@ -82,7 +103,7 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 					Priority = 2;
 					if (Priority<=PriorityStackOp)
 					{
-						while (!st.IsEmpty())
+						while (Priority<=PriorityStackOp)
 						{
 							PostfixForm[Index] = st.Get();
 							std::cout<<PostfixForm[Index];
@@ -90,6 +111,12 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 							PostfixForm[Index] = ' ';
 							std::cout<<PostfixForm[Index];
 							Index++;
+							if (!st.IsEmpty()) {
+								if ((st.TopElem()=='*')||(st.TopElem()=='/')) PriorityStackOp = 3;
+								if ((st.TopElem()=='+')||(st.TopElem()=='-')) PriorityStackOp = 2;
+								if (st.TopElem()=='(') PriorityStackOp = 0;
+							}
+							if (st.IsEmpty()) break;
 						}
 					}
 					if ((st.IsEmpty())||(Priority>PriorityStackOp))
@@ -107,7 +134,7 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 					Priority = 3;
 					if (Priority<=PriorityStackOp)
 					{
-						while (!st.IsEmpty())
+						while (Priority<=PriorityStackOp)
 						{
 							PostfixForm[Index] = st.Get();
 							std::cout<<PostfixForm[Index];
@@ -115,6 +142,12 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 							PostfixForm[Index] = ' ';
 							std::cout<<PostfixForm[Index];
 							Index++;
+							if (!st.IsEmpty()) {
+								if ((st.TopElem()=='*')||(st.TopElem()=='/')) PriorityStackOp = 3;
+								if ((st.TopElem()=='+')||(st.TopElem()=='-')) PriorityStackOp = 2;
+								if (st.TopElem()=='(') PriorityStackOp = 0;
+							}
+							if (st.IsEmpty()) break;
 						}
 					}
 					if ((st.IsEmpty())||(Priority>PriorityStackOp))
@@ -130,9 +163,9 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 					std::cout<<PostfixForm[Index];
 					Index++;
 					Priority = 3;
-					if (Priority<=PriorityStackOp)
-					{
-						while (!st.IsEmpty())
+					//if (Priority<=PriorityStackOp)
+					//{
+						while (Priority<=PriorityStackOp)
 						{
 							PostfixForm[Index] = st.Get();
 							std::cout<<PostfixForm[Index];
@@ -140,8 +173,14 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 							PostfixForm[Index] = ' ';
 							std::cout<<PostfixForm[Index];
 							Index++;
+							if (!st.IsEmpty()) {
+								if ((st.TopElem()=='*')||(st.TopElem()=='/')) PriorityStackOp = 3;
+								if ((st.TopElem()=='+')||(st.TopElem()=='-')) PriorityStackOp = 2;
+								if (st.TopElem()=='(') PriorityStackOp = 0;
+							}
+							if (st.IsEmpty()) break;
 						}
-					}
+					//}
 					if ((st.IsEmpty())||(Priority>PriorityStackOp))
 					{
 						st.Put('/');	
@@ -190,7 +229,9 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 		Index++;
 	}
 	PostfixForm[Index] = ' ';
-
+	Index++;
+	PostfixForm[Index] = '\0';
+	std::cout<<PostfixForm[Index];
 	std::cout<<std::endl;
 	return 1;
 }
@@ -198,14 +239,18 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 double TFormula :: FormulaCalculator()                      // вычисление формулы
 {
 	double str [MaxLen] = {0};
-	char y [50];
+	char y [MaxLen];
 
 	double result = 0;
 	FormulaConverter();
 
 	int ind = 0; //индекс в str
 	int i = 0; //индекс в PostfixForm
-	while (PostfixForm[i] != '\0')
+
+	int s = 0;
+	while (Formula[s] != '=') s++;
+
+	while (PostfixForm[i]!='\0')
 	{
 		if ((PostfixForm[i] >= '0')&&(PostfixForm[i] <= '9')) 
 		{
@@ -260,5 +305,5 @@ double TFormula :: FormulaCalculator()                      // вычисление формул
 		i++;
 	}
 
-	return result;
+	return str [--ind];
 }

@@ -45,7 +45,7 @@ void TStack::Put(const TData& Val)  {
 }
 
 TData TStack::Get() {
-	if (IsEmpty())
+	if (IsEmpty()) 
 		SetRetCode(DataEmpty);
 	if (pMem==NULL)
 		SetRetCode(DataNoMem);
