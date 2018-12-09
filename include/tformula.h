@@ -12,7 +12,7 @@ class TFormula
      int postfixFormulaLength;
    public:
      TFormula(const char *form);                      // конструктор
-     int FormulaChecker(int* Brackets);      // проверка корректности скобок
+     int FormulaChecker();      // проверка корректности скобок
      int FormulaConverter();                          // преобразование в постфиксную форму
      double FormulaCalculator();                      // вычисление формулы
      int Priority(char sign);                         // приоритет операции

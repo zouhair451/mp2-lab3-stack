@@ -16,9 +16,10 @@ TFormula::TFormula(const char* form)
     std::strcpy(Formula, form);
 }
 
-int TFormula::FormulaChecker(int* Brackets)
+int TFormula::FormulaChecker()
 {
   TStack stack(formulaLength);
+  int* Brackets = new int[formulaLength * 2]{};
   int bracketsCount = 0;
   int bracketsArrIndex = 0;
   int errIndex = 0;
@@ -60,7 +61,7 @@ int TFormula::FormulaChecker(int* Brackets)
     }
   }
 
-  std::cout << "\t BRACKETS \n  Opening   |   Closing" << std::endl;  // вывод таблицы
+  std::cout << "\033[91m\t BRACKETS \n  Opening   |   Closing\033[0m" << std::endl;  // вывод таблицы
   for (auto i = 0; i < bracketsArrIndex;)
   {
     if ((i + 1) % 2 != 0)
@@ -81,7 +82,7 @@ int TFormula::FormulaChecker(int* Brackets)
         std::cout << Brackets[i++] << std::endl;;
   }
 
-  std::cout << "  Errors: " << errIndex << std::endl;
+  std::cout << std::endl << "\033[91m  Errors: \033[0m" << errIndex << std::endl;
 
   return errIndex;
 }
@@ -99,13 +100,14 @@ int TFormula::FormulaConverter()
     else  if (Formula[i] != ')')
           {
             if ((!stack.IsEmpty() && (Priority(Formula[i]) == 0 || 
-            Priority(Formula[i]) > Priority(stack.TopElem()))) || 
-            stack.IsEmpty())
+                  Priority(Formula[i]) > Priority(stack.TopElem()))) || 
+                  stack.IsEmpty())
               stack.Put(Formula[i]);
             
             else
             {
-              while (!stack.IsEmpty() && Priority(stack.TopElem()) >= Priority(Formula[i]))
+              while (!stack.IsEmpty() && 
+                      Priority(stack.TopElem()) >= Priority(Formula[i]))
                 PostfixForm[postfixFormulaLength++] = stack.Get();
               
               stack.Put(Formula[i]);
@@ -113,7 +115,8 @@ int TFormula::FormulaConverter()
           }
           else
           {
-            while (!stack.IsEmpty() && Priority(stack.TopElem()) != Priority('('))
+            while (!stack.IsEmpty() && 
+                    Priority(stack.TopElem()) != Priority('('))
               PostfixForm[postfixFormulaLength++] = stack.Get();
 
             stack.Get();
@@ -123,29 +126,70 @@ int TFormula::FormulaConverter()
   while (!stack.IsEmpty())
     PostfixForm[postfixFormulaLength++] = stack.Get();
 
-  std::cout << "\t Postfix formula: ";
-
-  for (auto i = 0; i < postfixFormulaLength; i++)
-  {
-    std::cout << PostfixForm[i];
-  }
-  std::cout << std::endl;
   return 0;
 }
 
 double TFormula::FormulaCalculator()
 {
-  int* Brackets = new int[formulaLength * 2]{};
+  TStack stack(formulaLength);
+  int leftOperator = 0;
+  int rightOperator = 0;
 
-  if (FormulaChecker(Brackets) != 0)
+  if (FormulaChecker() != 0)                                                        //проверка скобок
   {
     throw std::logic_error("Incorrect formula");
     return -1;
   }
 
-  FormulaConverter();
+  std::cout << std::endl << "\033[91m \t ORIGINAL FORMULA: \033[0m";                //вывод исходной формулы
+  for (auto i = 0; i < formulaLength; i++)
+  {
+    std::cout << Formula[i];
+  }
+  std::cout << std::endl;
 
-  return 0;
+  if (postfixFormulaLength == 0)                                                    //перевод в постфиксную форму
+    FormulaConverter();
+
+  std::cout << std::endl << "\033[91m \t POSTFIX FORMULA: \033[0m";                 //вывод постфиксной формы
+  for (auto i = 0; i < postfixFormulaLength; i++)
+  {
+    std::cout << PostfixForm[i];
+  }
+  std::cout << std::endl;
+
+  for (auto i = 0; i < postfixFormulaLength; i++)                                   //подсчет формулы
+  {
+    if (isdigit(PostfixForm[i]))
+    {
+      stack.Put(PostfixForm[i] - '0');
+    }
+    else
+    {
+      leftOperator = stack.Get();
+      rightOperator = stack.Get();
+
+      switch (PostfixForm[i])
+      {
+        case '+' : 
+          stack.Put(rightOperator + leftOperator);
+          break;
+        case '-' : 
+          stack.Put(rightOperator - leftOperator);
+          break;
+        case '*' : 
+          stack.Put(rightOperator * leftOperator);
+          break;
+        case '/' : 
+          stack.Put(rightOperator / leftOperator);
+          break;
+      }
+    }
+  }
+
+  std::cout << std::endl << "\033[91m \t RESULT: \033[0m" << stack.TopElem() << std::endl;  
+
+  return stack.Get();
 }
 
 int TFormula::Priority(char sign)
