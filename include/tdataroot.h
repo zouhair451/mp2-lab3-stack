@@ -17,7 +17,8 @@
 #define DataFull   -102  // СД переполнена
 #define DataNoMem  -103  // нет памяти
 
-typedef int    TElem;    // тип элемента СД
+//typedef int    TElem;    // тип элемента СД
+typedef char    TElem; // because we need Stack of char
 typedef TElem* PTElem;
 typedef int    TData;    // тип значений в СД
 
@@ -41,7 +42,7 @@ public:
   virtual TData Get   (void)             = 0; // извлечь значение
 
   // служебные методы
-  virtual int  IsValid() = 0;                 // тестирование структуры
+  //virtual int  IsValid() = 0;                 // тестирование структуры
   virtual void Print()   = 0;                 // печать значений
 
   // дружественные классы

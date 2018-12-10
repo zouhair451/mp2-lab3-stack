@@ -3,14 +3,14 @@
 class TStack :public TDataRoot
 {
 private:
-	int top; 
+	int top; // index of the last added element
 public:
     TStack(int Size = DefMemSize);
-    ~TStack() {};
-	void Put(const TData &Val); 
+    ~TStack() { delete[] pMem; };
+	void Put(const TData &Val);
 	TData Get();
-	virtual TData TopElem(); 
+	virtual TData TopElem();
 
-	int IsValid();
+	//int IsValid();
     void Print();
 };
