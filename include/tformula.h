@@ -10,6 +10,6 @@ class TFormula
      int FormulaChecker(int Brackets[],int size);     // проверка корректности скобок
      int FormulaConverter();                          // преобразование в постфиксную форму
      double FormulaCalculator();                      // вычисление формулы
-     int TFormula::Priority(char c) // priority of operation
-     bool isOperation(char c) // check whether the symbol is (, ), +, -, * or /
+     int Priority(char c); // priority of operation
+     bool isOperation(char c); // check whether the symbol is (, ), +, -, * or /
 };

@@ -3,11 +3,12 @@
 #include "C:\Users\1\Documents\Visual Studio 2015\Projects\mp2-lab3-stack\include\tstack.h"
 #include <string>
 #include <cstdlib>
+using namespace std;
 
      TFormula::TFormula(char *form)
      {
          int i = 0;
-         for (int j = 0; j < MaxLen); j++) // fill the arrays with '\0' symbol to indicate the end of the expression later.
+         for (int j = 0; j < MaxLen; j++) // fill the arrays with '\0' symbol to indicate the end of the expression later.
          {
              Formula[j] = '\0';
              PostfixForm[j] = '\0';
@@ -84,7 +85,7 @@
          TStack OperationsStack(MaxLen); // stack for operations (, ), +, -, * or /
 
          int Brackets[MaxLen];
-         if (FormulaChecker(Brackets[], MaxLen) != 0) // if there are any errors
+         if (FormulaChecker(Brackets, MaxLen) != 0) // if there are any errors
             throw "incorrect formula (brackets' checker returns errors)";
 
          while (Formula[i])
@@ -99,7 +100,7 @@
              {
                  if (Priority(Formula[i]) == 0) // symbol is '('
                     OperationsStack.Put(Formula[i]);
-                 else if (Priority(Formula[i]) > Priority(OperationStack.Get())) // if priority of the current operation MORE than priority of the operation in the top of the stack
+                 else if (Priority(Formula[i]) > Priority(OperationsStack.Get())) // if priority of the current operation MORE than priority of the operation in the top of the stack
                     OperationsStack.Put(Formula[i]);
                  else if (OperationsStack.IsEmpty()) // if stack is empty
                     OperationsStack.Put(Formula[i]);
@@ -111,7 +112,7 @@
                  }
                  else
                  {
-                     while (Priority(Formula[i]) <= Priority(OperationStack.Get()))
+                     while (Priority(Formula[i]) <= Priority(OperationsStack.Get()))
                         PostfixForm[j++] = OperationsStack.Get(); // put all operations (from the stack) with >= priority than current in the output expression.
                      OperationsStack.Put(Formula[i]); // then put the current operation in the stack
                  }
@@ -130,30 +131,30 @@
      {
          switch (c)
          {
-             case '('
+             case '(':
                     return 0;
                     break;
-             case ')'
+             case ')':
                     return 1;
                     break;
-             case '+'
+             case '+':
                     return 2;
                     break;
-             case '-'
+             case '-':
                     return 2;
                     break;
-             case '*'
+             case '*':
                     return 3;
                     break;
-             case '/'
+             case '/':
                     return 3;
                     break;
-             default
-                    throw "IncorrectOperation"
+             default:
+                    throw "IncorrectOperation";
          }
      }
 
-     bool isOperation(char c) // check whether the symbol is (, ), +, -, * or /
+     bool TFormula::isOperation(char c) // check whether the symbol is (, ), +, -, * or /
      {
          if (c == '(' || c == ')' || c == '+' || c == '-' || c == '*' || c == '/')
             return true;
@@ -164,8 +165,9 @@
      double TFormula::FormulaCalculator()
      {
          int i = 0; // index for PostfixForm[]
+         int j = 0; // index for StrOperand
          TStack OperandsStack(MaxLen);
-         string StrOperand = ""; // temporary variable for converting the operand from array of char to double
+         char StrOperand[MaxLen] = ""; // temporary variable for converting the operand from array of char to double
          double DoubleOperand; // operand after it has been converted
          double op1, op2, opRes;
 
@@ -174,17 +176,17 @@
              if (!isOperation(PostfixForm[i])) // if the symbol is operand
              {
                  // collect operand in the variable StrOperand
-                 StrOperand += PostfixForm[i];
+                 StrOperand[j++] = PostfixForm[i];
                  i++;
                  continue; // to the next step of loop (because we need to collect operand, which may consist of several symbols
              }
 
              //try to convert collected operand to number
-             if (!DoubleOperand = atof(StrOperand))
-                throw "Operand is not a number"; // what if operand is 0 ???
+           //  if (!DoubleOperand = atof(StrOperand))
+           //     throw "Operand is not a number"; // what if operand is 0 ???
              DoubleOperand = atof(StrOperand); // convert
-             OperandsStack.Get(DoubleOperand); // put operand in stack
-             StrOperand = ""; // for the next step of loop
+             OperandsStack.Put(DoubleOperand); // put operand in stack
+             StrOperand[0] = '\0'; // for the next step of loop
 
              if (isOperation(PostfixForm[i])) // if the symbol is operation +, -, *, /
              {
@@ -197,7 +199,8 @@
                      case '-': opRes = op1 - op2;
                      case '*': opRes = op1 * op2;
                      case '/': opRes = op1 / op2;
-                     default throw "incorrect operation during formula calculation";
+                     default:
+                        throw "incorrect operation during formula calculation";
                  }
 
                  OperandsStack.Put(opRes);
