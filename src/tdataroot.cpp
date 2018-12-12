@@ -15,7 +15,7 @@ TDataRoot::TDataRoot(int Size): TDataCom()
   MemSize = Size;
   if (Size <= 0) // память будет установлена методом SetMem
   {
-    pMem = NULL;
+    pMem = nullptr;
     MemType = MEM_RENTER;
     TDataCom::SetRetCode(DataNoMem);
   }
