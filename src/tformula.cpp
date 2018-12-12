@@ -62,14 +62,14 @@ int TFormula::FormulaConverter()
 	int ResNum = 0;
 	int i = 0;
 
-	if ((Formula[i] <= '0') && (Formula[i] >= '9') &&
-		(Formula[i] != '(') && (Formula[i] != ')') &&
-		(Formula[i] != '+') && (Formula[i] != '-') && (Formula[i] != '*') && (Formula[i] != '/') &&
-		(Formula[i] != ' ') && (Formula[i] != '.'))
-		throw(-1);
-
 	while (Formula[i])
 	{
+		if (((Formula[i] <= '0') || (Formula[i] >= '9')) &&
+			(Formula[i] != '(') && (Formula[i] != ')') &&
+			(Formula[i] != '+') && (Formula[i] != '-') && (Formula[i] != '*') && (Formula[i] != '/') &&
+			(Formula[i] != ' ') && (Formula[i] != '.'))
+			throw(-1);	
+
 		if (((Formula[i] >= '0') && (Formula[i] <= '9')) || (Formula[i] == '.'))
 		{
 			while (((Formula[i] >= '0') && (Formula[i] <= '9')) || (Formula[i] == '.'))
@@ -173,17 +173,21 @@ double TFormula::FormulaCalculator()
 	TStack St(255);
 
 	int i = 0;
+	int k = 0;
 
-	if ((PostfixForm[i] <= '0') && (PostfixForm[i] >= '9') &&
-		(PostfixForm[i] != '+') && (PostfixForm[i] != '-') && (PostfixForm[i] != '*') && (PostfixForm[i] != '/') &&
-		(PostfixForm[i] != ' ') && (PostfixForm[i] != '.'))
-		throw(-1);
 
 	while (PostfixForm[i])
 	{
 		if ((PostfixForm[i] >= '0') && (PostfixForm[i] <= '9'))
 		{
-			St.Put((int)(PostfixForm[i]) - '0');
+			k = k * 10 + ((int)(PostfixForm[i]) - '0');
+			if (!((PostfixForm[i + 1] >= '0') && (PostfixForm[i + 1] <= '9')))
+			{				
+				St.Put(k);
+				k = 0;
+			}
+			
+				
 		}
 		else if ((PostfixForm[i] == '+') || (PostfixForm[i] == '-') || (PostfixForm[i] == '*') || (PostfixForm[i] == '/'))
 		{
