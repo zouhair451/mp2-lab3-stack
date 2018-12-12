@@ -12,4 +12,6 @@ class TFormula
      double FormulaCalculator();                      // вычисление формулы
      int Priority(char c); // priority of operation
      bool isOperation(char c); // check whether the symbol is (, ), +, -, * or /
+     void ShowFormula();
+     void ShowPostfixForm();
 };

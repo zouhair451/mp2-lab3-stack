@@ -35,6 +35,8 @@ using namespace std;
 	}
 	TData TStack::TopElem()
 	{
+	    if (top < 0)
+            throw "StackIsEmptyDuringTopElemCall";
 	    return pMem[top];
 	}
 

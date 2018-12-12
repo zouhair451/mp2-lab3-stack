@@ -46,7 +46,20 @@ int main() // this main() is for Stack of int!!! Change typedef TElem in the fil
             break;
       }
   }
+try{
+  TStack st1(5);
+  st1.Put(1);
+  if(st1.Get() != 3)
+    cout << "OK" << endl;
+  if(st1.Get() != 4)
+    cout << "OK" << endl;
+}
+catch (const char* ex)
+{
+    cout << ex << endl;
+}
  // system("pause");
   return 0;
 }
+
 */

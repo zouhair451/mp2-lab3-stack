@@ -3,6 +3,7 @@
 #include "C:\Users\1\Documents\Visual Studio 2015\Projects\mp2-lab3-stack\include\tstack.h"
 #include <string>
 #include <cstdlib>
+#include <iostream>
 using namespace std;
 
      TFormula::TFormula(char *form)
@@ -30,7 +31,7 @@ using namespace std;
          int number = 0; // number of each bracket
          TStack BracketsStack(size);  // Stack for opening brackets
          int j = 0; // index for Brackets[]
-         // Brackets[] - the resulting table
+         // Brackets[] is the resulting table
 
          while (Formula[i])
          {
@@ -43,15 +44,18 @@ using namespace std;
              if (Formula[i] == ')')
              {
                  number++;
-                 if (BracketsStack.IsEmpty())
+                 if (BracketsStack.IsEmpty()) // put (0, number)
                  {
-                     if (j < size)
+                     if (j < size - 1)
+                     {
                         Brackets[j++] = 0;
+                        Brackets[j++] = number;
+                     }
                      else
                         throw "OutOfOder";
                      errors++;  // the opening bracket is absent for current closing one
                  }
-                 if (j < size)
+                 else if (j < size) // if stack is not empty, put a pair
                  {
                     Brackets[j++] = BracketsStack.Get();
                     Brackets[j++] = number; // we put a pair of opening and closing bracket (their numbers) to the resulting table
@@ -100,19 +104,19 @@ using namespace std;
              {
                  if (Priority(Formula[i]) == 0) // symbol is '('
                     OperationsStack.Put(Formula[i]);
-                 else if (Priority(Formula[i]) > Priority(OperationsStack.Get())) // if priority of the current operation MORE than priority of the operation in the top of the stack
-                    OperationsStack.Put(Formula[i]);
                  else if (OperationsStack.IsEmpty()) // if stack is empty
+                    OperationsStack.Put(Formula[i]);
+                 else if (Priority(Formula[i]) > Priority(OperationsStack.TopElem())) // if priority of the current operation MORE than priority of the operation in the top of the stack
                     OperationsStack.Put(Formula[i]);
                  else if (Priority(Formula[i]) == 1) // symbol is ')'
                  {
-                     while (OperationsStack.Get() != '(')
+                     while (OperationsStack.TopElem() != '(')
                         PostfixForm[j++] = OperationsStack.Get(); // put all operations in the output until the opening bracket in the stack
                      OperationsStack.Get(); // we kick out the opening bracket from the stack, but not put it in the output expression.
                  }
                  else
                  {
-                     while (Priority(Formula[i]) <= Priority(OperationsStack.Get()))
+                     while (!(OperationsStack.IsEmpty()) && (Priority(Formula[i]) <= Priority(OperationsStack.TopElem())))
                         PostfixForm[j++] = OperationsStack.Get(); // put all operations (from the stack) with >= priority than current in the output expression.
                      OperationsStack.Put(Formula[i]); // then put the current operation in the stack
                  }
@@ -150,7 +154,8 @@ using namespace std;
                     return 3;
                     break;
              default:
-                    throw "IncorrectOperation";
+                    throw c;
+                    //throw "IncorrectOperation";
          }
      }
 
@@ -210,4 +215,29 @@ using namespace std;
          }
 
          return OperandsStack.Get(); // return the result after parsing of the expression
+     }
+
+     void TFormula::ShowFormula()
+     {
+         int i = 0;
+         cout << "Formula[]: ";
+         while (Formula[i])
+         {
+             cout << Formula[i] << " ";
+             i++;
+         }
+         cout << endl;
+
+     }
+
+     void TFormula::ShowPostfixForm()
+     {
+         int i = 0;
+         cout << "PostfixForm[]: ";
+         while (PostfixForm[i])
+         {
+             cout << PostfixForm[i] << " ";
+             i++;
+         }
+         cout << endl;
      }
