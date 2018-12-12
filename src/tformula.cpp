@@ -1,7 +1,7 @@
 #include"tformula.h"
 #include"tstack.h"
 #include"templateStack.h"
-//#include<cstring>
+#include<cstring>
 #include<locale>
 #include<vector>
 
