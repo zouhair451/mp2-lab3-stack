@@ -1,14 +1,12 @@
 #include"tformula.h"
 #include"tstack.h"
 #include"templateStack.h"
-#include<cstring>
+//#include<cstring>
 #include<locale>
 #include<vector>
 
-int op_prior(char);
+int op_priority(char);
 bool piece_of_number(char);
-bool must_operator_push(const TStack &, int);
-bool must_operator_get(const TStack &, int);
 
 TFormula::TFormula(char *form)
 {
@@ -21,39 +19,39 @@ TFormula::TFormula(char *form)
 
 int TFormula::FormulaChecker(int Brackets[], int Size)
 {
-  int err = 0, index = 0, number = 1;
-  char *pCh = Formula;
-  TStack st(Size);
+  int err = 0, index = 0, bracket_number = 1;
+  char *pSym = Formula;
+  TStack stack_brackets(Size);
 
   for (int i = 0; i < Size; ++i)
     Brackets[i] = -1;
 
   do
   {
-    switch (*pCh)
+    switch (*pSym)
     {
     case '(':
-      st.Put(number++);
+      stack_brackets.Put(bracket_number++);
       break;
     case ')':
-      if (st.IsEmpty())
+      if (stack_brackets.IsEmpty())
       {
         Brackets[index++] = 0;
-        Brackets[index++] = number++;
+        Brackets[index++] = bracket_number++;
         ++err;
       }
       else
       {
-        Brackets[index++] = st.Get();
-        Brackets[index++] = number++;
+        Brackets[index++] = stack_brackets.Get();
+        Brackets[index++] = bracket_number++;
       }
       break;
     }
-  } while (*++pCh);
+  } while (*++pSym);
 
-  while (!st.IsEmpty())
+  while (!stack_brackets.IsEmpty())
   {
-    Brackets[index++] = st.Get();
+    Brackets[index++] = stack_brackets.Get();
     Brackets[index++] = 0;
     ++err;
   }
@@ -63,9 +61,9 @@ int TFormula::FormulaChecker(int Brackets[], int Size)
 
 int TFormula::FormulaConverter()
 {
-  char *pCh = Formula;
-  int index = 0;
-  TStack st(MaxLen);
+  char *pSym = Formula;
+  int index = 0, priority;
+  TStack stack_operators(MaxLen);
 
   int brackets[MaxLen * 2];
   if (FormulaChecker(brackets, MaxLen * 2) != 0)
@@ -73,80 +71,80 @@ int TFormula::FormulaConverter()
 
   do
   {
-    int prior = op_prior(*pCh);
+    priority = op_priority(*pSym);
 
-    if (prior == -2)
-      continue;       //если встречаем пробел в исходной строке - едем дальше
+    if (priority == -2)
+      continue;                                                      //если встречаем пробел в исходной строке - едем дальше
 
-    if (prior == 2 || prior == 3)
-      PostfixForm[index++] = ' ';    //разделяем операнды пробелом в выходной строке
+    if (priority == 2 || priority == 3)
+      PostfixForm[index++] = ' ';                                    //разделяем операнды пробелом в выходной строке
 
-    if (*pCh == ')')          //обработка закрывающей скобки
+    if (*pSym == ')')                                                //специальная обработка '('
     {
-      while (st.TopElem() != '(')
-        PostfixForm[index++] = st.Get();  //выписываем все операторы из стека до открывающей скобки
-      st.Get();        //выталкиваем саму скобку
+      while (stack_operators.TopElem() != '(')                       //
+        PostfixForm[index++] = stack_operators.Get();                //
+      stack_operators.Get();                                         //выписываем из стека все операторы до '(' включительно
+      continue;
     }
-    else if (prior == -1)
-      PostfixForm[index++] = *pCh;    //записываем операнд в выходную строку
-    else if (must_operator_push(st, prior))
-    {
-      st.Put(*pCh);                   //пушим оператор в стек
-    }
+
+    if (priority == -1)
+      PostfixForm[index++] = *pSym;                                  //записываем операнд в постфиксную строку
+    else if (priority == 0 || stack_operators.IsEmpty())
+      stack_operators.Put(*pSym);                                    //
+    else if ( priority > op_priority(stack_operators.TopElem()) )           
+      stack_operators.Put(*pSym);                                    //Кладем оператор в стек, если надо
     else
     {
-      while (must_operator_get(st, prior))
-        PostfixForm[index++] = st.Get();     //достаем из стека операторы, пока приоритет больше либо равен текущему
-      st.Put(*pCh);
+      while (priority <= op_priority(stack_operators.TopElem()))
+      {
+        PostfixForm[index++] = stack_operators.Get();                //выписываем из стека нужные операторы
+        if (stack_operators.IsEmpty())
+          break;
+      }
+      stack_operators.Put(*pSym);                                    //кладем новый оператор
     }
 
-  } while (*++pCh);
+  } while (*++pSym);
 
-  while (!st.IsEmpty())
-    PostfixForm[index++] = st.Get();
+  while (!stack_operators.IsEmpty())
+    PostfixForm[index++] = stack_operators.Get();                    //выписывем оставшиеся операторы из стека
 
   return 1;
 }
 
 double TFormula::FormulaCalculator()
 {
-  char *pCh = PostfixForm;
-  Stack<double> operands(MaxLen);
+  char *pSym = PostfixForm, operand_str[MaxLen];
+  int s;
+  Stack<double> stack_operands(MaxLen);
 
   do
   {
-    if (op_prior(*pCh) == -2)
-      continue;
+    if (op_priority(*pSym) == -2)
+      continue;                                                      //пропускаем пробелы
 
-    if (piece_of_number(*pCh))
+    if (piece_of_number(*pSym))                                      //если наткнулись на цифру или точку
     {
-      std::vector<char> tmpV;
+      std::vector<char> tmp_vec;
       do
       {
-        tmpV.push_back(*pCh);
-      } while (piece_of_number(*++pCh));
-      --pCh;
+        tmp_vec.push_back(*pSym);                                    //посимвольно считываем операнд и записываем во временный вектор
+      } while (piece_of_number(*++pSym));
+      tmp_vec.push_back('\0');
+      --pSym;
 
-      size_t s = tmpV.size();
-      char *tmpC = new char[s + 1];
+      copy(tmp_vec.begin(), tmp_vec.end(), operand_str);
 
-      tmpC[s] = 0;
-      for (int i = 0; i < s; ++i)
-        tmpC[i] = tmpV[i];
-
-      double d = atof(tmpC);
-      operands.Push(d);
-
-      delete[] tmpC;
+      stack_operands.Push(atof(operand_str));                        //переводим строку в число и кладем в стек
     }
     else
     {
-      double op2 = operands.Pop();
-      double op1 = operands.Pop();
+      double op2 = stack_operands.Pop();                             //
+      double op1 = stack_operands.Pop();                             //достаем операторы
 
       double result;
 
-      switch (*pCh)
+      switch (*pSym)                                                 //записываем результат соответствующей операции
       {
       case '+':
         result = op1 + op2;
@@ -162,17 +160,17 @@ double TFormula::FormulaCalculator()
         break;
       }
 
-      operands.Push(result);
+      stack_operands.Push(result);                                   //кладем результат в стек
     }
 
-  } while (*++pCh);
+  } while (*++pSym);
 
-  return operands.Pop();
+  return stack_operands.Pop();
 }
 
 
 
-int op_prior(char ch)
+int op_priority(char ch)
 {
   switch (ch)
   {
@@ -197,23 +195,4 @@ int op_prior(char ch)
 bool piece_of_number(char ch)
 {
   return isdigit(ch) || ch == '.';
-}
-
-bool must_operator_push(const TStack &st, int prior)
-{
-  if (st.IsEmpty() || prior == 0)
-    return true;
-  if (!st.IsEmpty())
-    if (op_prior(st.TopElem()) < prior)
-      return true;
-  return false;
-}
-
-bool must_operator_get(const TStack &st, int prior)
-{
-  if (st.IsEmpty())
-    return false;
-  else if (op_prior(st.TopElem()) >= prior)
-    return true;
-  return false;
 }

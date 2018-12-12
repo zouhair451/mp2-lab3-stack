@@ -3,47 +3,40 @@
 #include<iostream>
 #include<algorithm>
 
-TStack::TStack(int Size) : TDataRoot(Size)
-{
-  top = 0;
-}
+TStack::TStack(int Size) : TDataRoot(Size), top(-1) {}
 
 void TStack::Put(const TData &Val)
 {
-  if (TDataRoot::DataCount < TDataRoot::MemSize)
-  {
-    TDataRoot::pMem[top++] = Val;
-    TDataRoot::DataCount++;
-  }
-  else
+  if (TDataRoot::IsFull())
     throw DataFull;
 
-  if (TDataRoot::DataCount == TDataRoot::MemSize)
+  TDataRoot::DataCount++;
+
+  if (TDataRoot::IsFull())
     TDataCom::SetRetCode(DataFull);
+
+  TDataRoot::pMem[++top] = Val;
 }
 
 TData TStack::Get()
 {
-  if (TDataRoot::DataCount > 0)
-  {
-    TDataRoot::DataCount--;
-    top--;
-  }
-  else
+  if (TDataRoot::IsEmpty())
     throw DataEmpty;
 
-  if (TDataRoot::DataCount == 0)
+  TDataRoot::DataCount--;
+
+  if (TDataRoot::IsEmpty())
     TDataCom::SetRetCode(DataEmpty);
 
-  return TDataRoot::pMem[top];
+  return TDataRoot::pMem[top--];
 }
 
 TData TStack::TopElem() const
 {
-  if (TDataRoot::DataCount == 0)
+  if (TDataRoot::IsEmpty())
     throw DataEmpty;
   
-  return TDataRoot::pMem[top - 1];
+  return TDataRoot::pMem[top];
 }
 
 int TStack::IsValid()
