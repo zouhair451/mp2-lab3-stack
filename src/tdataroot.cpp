@@ -6,7 +6,6 @@
 // Динамические структуры данных - базовый (абстрактный) класс - версия 3.1
 //   память выделяется динамически или задается методом SetMem
 
-#include <stdio.h>
 #include "tdataroot.h"
 
 TDataRoot::TDataRoot(int Size): TDataCom()
