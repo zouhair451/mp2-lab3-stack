@@ -66,8 +66,8 @@ int main()
     try{
         f3.FormulaConverter();
         f3.ShowPostfixForm();
-        //double result3 = f3.FormulaCalculator();
-        //cout << "Result is: " << result3 << endl;
+        double result3 = f3.FormulaCalculator();
+        cout << "Result is: " << result3 << endl;
     }
     catch (const char* excep)
     {

@@ -91,7 +91,7 @@ using namespace std;
          int Brackets[MaxLen];
          if (FormulaChecker(Brackets, MaxLen) != 0) // if there are any errors
             throw "incorrect formula (brackets' checker returns errors)";
-
+         int counter = 0;
          while (Formula[i])
          {
              if (!isOperation(Formula[i])) // if symbol is operand
@@ -99,15 +99,21 @@ using namespace std;
                  if (j >= MaxLen)
                     throw "TooLargePostfixForm";
                  PostfixForm[j++] = Formula[i]; // put the operand in the output expression
+                 counter++;
              }
              else // if symbol is operation (, ), +, -, * or /
              {
+                 if (counter)
+                 {
+                     AddSpaceAfterOperand(j);
+                     counter = 0;
+                 }
                  if (Priority(Formula[i]) == 0) // symbol is '('
                     OperationsStack.Put(Formula[i]);
                  else if (OperationsStack.IsEmpty()) // if stack is empty
                     OperationsStack.Put(Formula[i]);
                  else if (Priority(Formula[i]) > Priority(OperationsStack.TopElem())) // if priority of the current operation MORE than priority of the operation in the top of the stack
-                    OperationsStack.Put(Formula[i]);
+                        OperationsStack.Put(Formula[i]);
                  else if (Priority(Formula[i]) == 1) // symbol is ')'
                  {
                      while (OperationsStack.TopElem() != '(')
@@ -171,7 +177,9 @@ using namespace std;
      {
          int i = 0; // index for PostfixForm[]
          int j = 0; // index for StrOperand
-         TStack OperandsStack(MaxLen);
+         //TStack OperandsStack(MaxLen); // we TStack is developed for char elements, that's why we can not use it for double operands
+         double OperandsStack[MaxLen]; // array, actually
+         int TopOfOperandsStack = -1; // "stack", which is actually array, is empty yet
          char StrOperand[MaxLen] = ""; // temporary variable for converting the operand from array of char to double
          double DoubleOperand; // operand after it has been converted
          double op1, op2, opRes;
@@ -190,13 +198,22 @@ using namespace std;
            //  if (!DoubleOperand = atof(StrOperand))
            //     throw "Operand is not a number"; // what if operand is 0 ???
              DoubleOperand = atof(StrOperand); // convert
-             OperandsStack.Put(DoubleOperand); // put operand in stack
+             //OperandsStack.Put(DoubleOperand); // put operand in stack
+             if (TopOfOperandsStack == MaxLen)
+                throw "TopOfOperandsStackIsOutOfRange(ArrayIndexInFormulaCalculator)";
+             OperandsStack[++TopOfOperandsStack] = DoubleOperand;
              StrOperand[0] = '\0'; // for the next step of loop
 
              if (isOperation(PostfixForm[i])) // if the symbol is operation +, -, *, /
              {
-                 op2 = OperandsStack.Get();
-                 op1 = OperandsStack.Get();
+                 //op2 = OperandsStack.Get();
+                 //op1 = OperandsStack.Get();
+                 if (TopOfOperandsStack == -1)
+                    throw "OperandsStackIsEmpty(ArrayInFormulaCalculator)";
+                 op2 = OperandsStack[TopOfOperandsStack--];
+                 if (TopOfOperandsStack == -1)
+                    throw "OperandsStackIsEmpty(ArrayInFormulaCalculator)";
+                 op1 = OperandsStack[TopOfOperandsStack--];
 
                  switch (PostfixForm[i])
                  {
@@ -208,13 +225,17 @@ using namespace std;
                         throw "incorrect operation during formula calculation";
                  }
 
-                 OperandsStack.Put(opRes);
+                 //OperandsStack.Put(opRes);
+                if (TopOfOperandsStack == MaxLen)
+                    throw "TopOfOperandsStackIsOutOfRange(ArrayIndexInFormulaCalculator)";
+                OperandsStack[++TopOfOperandsStack] = opRes;
              }
 
              i++;
          }
-
-         return OperandsStack.Get(); // return the result after parsing of the expression
+         if (TopOfOperandsStack == -1)
+                    throw "OperandsStackIsEmpty(ArrayInFormulaCalculator)";
+         return OperandsStack[TopOfOperandsStack--]; //OperandsStack.Get(); // return the result after parsing of the expression
      }
 
      void TFormula::ShowFormula()
@@ -223,7 +244,7 @@ using namespace std;
          cout << "Formula[]: ";
          while (Formula[i])
          {
-             cout << Formula[i] << " ";
+             cout << Formula[i];
              i++;
          }
          cout << endl;
@@ -236,8 +257,15 @@ using namespace std;
          cout << "PostfixForm[]: ";
          while (PostfixForm[i])
          {
-             cout << PostfixForm[i] << " ";
+             cout << PostfixForm[i];
              i++;
          }
          cout << endl;
+     }
+
+     void TFormula::AddSpaceAfterOperand(int & j)
+     {
+         if (j >= MaxLen)
+                    throw "TooLargePostfixFormDuringTryingToAddSpace";
+         PostfixForm[j++] = ' ';
      }
