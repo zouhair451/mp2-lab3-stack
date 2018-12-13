@@ -57,7 +57,7 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 		{
 			PostfixForm[Index] = Formula [i];
 			Index++;
-			std::cout<<Formula [i];
+			//std::cout<<Formula [i];
 		}
 		if ((Formula[i] == '+')||(Formula[i] == '-')||(Formula[i] == '*')||(Formula[i] == '/')
 			||(Formula[i] == '(')||(Formula[i] == ')'))
@@ -67,18 +67,16 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 				case '+': 
 				{
 					PostfixForm[Index] = ' ';
-					std::cout<<PostfixForm[Index];
+					//std::cout<<PostfixForm[Index];
 					Index++;
 					Priority = 2;
-					if (Priority<=PriorityStackOp)									//если меньше или равен
-					{
-						while (Priority<=PriorityStackOp)
+					while (Priority<=PriorityStackOp)
 						{
 							PostfixForm[Index] = st.Get();
-							std::cout<<PostfixForm[Index];
+							//std::cout<<PostfixForm[Index];
 							Index++;
 							PostfixForm[Index] = ' ';
-							std::cout<<PostfixForm[Index];
+							//std::cout<<PostfixForm[Index];
 							Index++;
 							if (!st.IsEmpty()) {
 								if ((st.TopElem()=='*')||(st.TopElem()=='/')) PriorityStackOp = 3;
@@ -87,7 +85,6 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 							}
 							if (st.IsEmpty()) break;
 						}
-					}
 					if ((st.IsEmpty())||(Priority>PriorityStackOp))					//если больше
 					{
 						st.Put('+');	
@@ -98,18 +95,16 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 				case '-':
 				{
 					PostfixForm[Index] = ' ';
-					std::cout<<PostfixForm[Index];
+					//std::cout<<PostfixForm[Index];
 					Index++;
 					Priority = 2;
-					if (Priority<=PriorityStackOp)
-					{
-						while (Priority<=PriorityStackOp)
+					while (Priority<=PriorityStackOp)
 						{
 							PostfixForm[Index] = st.Get();
-							std::cout<<PostfixForm[Index];
+							//std::cout<<PostfixForm[Index];
 							Index++;
 							PostfixForm[Index] = ' ';
-							std::cout<<PostfixForm[Index];
+							//std::cout<<PostfixForm[Index];
 							Index++;
 							if (!st.IsEmpty()) {
 								if ((st.TopElem()=='*')||(st.TopElem()=='/')) PriorityStackOp = 3;
@@ -118,7 +113,6 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 							}
 							if (st.IsEmpty()) break;
 						}
-					}
 					if ((st.IsEmpty())||(Priority>PriorityStackOp))
 					{
 						st.Put('-');	
@@ -129,18 +123,16 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 				case '*': 
 				{
 					PostfixForm[Index] = ' ';
-					std::cout<<PostfixForm[Index];
+					//std::cout<<PostfixForm[Index];
 					Index++;
 					Priority = 3;
-					if (Priority<=PriorityStackOp)
-					{
 						while (Priority<=PriorityStackOp)
 						{
 							PostfixForm[Index] = st.Get();
-							std::cout<<PostfixForm[Index];
+							//std::cout<<PostfixForm[Index];
 							Index++;
 							PostfixForm[Index] = ' ';
-							std::cout<<PostfixForm[Index];
+							//std::cout<<PostfixForm[Index];
 							Index++;
 							if (!st.IsEmpty()) {
 								if ((st.TopElem()=='*')||(st.TopElem()=='/')) PriorityStackOp = 3;
@@ -149,7 +141,6 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 							}
 							if (st.IsEmpty()) break;
 						}
-					}
 					if ((st.IsEmpty())||(Priority>PriorityStackOp))
 					{
 						st.Put('*');	
@@ -160,18 +151,16 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 				case '/' :
 				{
 					PostfixForm[Index] = ' ';
-					std::cout<<PostfixForm[Index];
+					//std::cout<<PostfixForm[Index];
 					Index++;
 					Priority = 3;
-					//if (Priority<=PriorityStackOp)
-					//{
-						while (Priority<=PriorityStackOp)
+					while (Priority<=PriorityStackOp)
 						{
 							PostfixForm[Index] = st.Get();
-							std::cout<<PostfixForm[Index];
+							//std::cout<<PostfixForm[Index];
 							Index++;
 							PostfixForm[Index] = ' ';
-							std::cout<<PostfixForm[Index];
+							//std::cout<<PostfixForm[Index];
 							Index++;
 							if (!st.IsEmpty()) {
 								if ((st.TopElem()=='*')||(st.TopElem()=='/')) PriorityStackOp = 3;
@@ -180,7 +169,6 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 							}
 							if (st.IsEmpty()) break;
 						}
-					//}
 					if ((st.IsEmpty())||(Priority>PriorityStackOp))
 					{
 						st.Put('/');	
@@ -198,20 +186,25 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 				case ')' :
 				{
 					PostfixForm[Index] = ' ';
-					std::cout<<PostfixForm[Index];
+					//std::cout<<PostfixForm[Index];
 					Index++;
 					Priority = 1;
 					PriorityStackOp = Priority;
 					while (st.TopElem()!='(')
 						{
 							PostfixForm[Index] = st.Get();
-							std::cout<<PostfixForm[Index];
+							//std::cout<<PostfixForm[Index];
 							Index++;
 							PostfixForm[Index] = ' ';
-							std::cout<<PostfixForm[Index];
+							//std::cout<<PostfixForm[Index];
 							Index++;
 						}
 					st.Get();
+					if (!st.IsEmpty()) {
+								if ((st.TopElem()=='*')||(st.TopElem()=='/')) PriorityStackOp = 3;
+								if ((st.TopElem()=='+')||(st.TopElem()=='-')) PriorityStackOp = 2;
+								if (st.TopElem()=='(') PriorityStackOp = 0;
+					}
 					break;
 				}
 			}
@@ -222,17 +215,15 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 	}
 	while(!st.IsEmpty()) {
 		PostfixForm[Index] = ' ';
-		std::cout<<PostfixForm[Index];
+		//std::cout<<PostfixForm[Index];
 		Index++;
 		PostfixForm[Index] = st.Get();
-		std::cout<<PostfixForm[Index];
+		//std::cout<<PostfixForm[Index];
 		Index++;
 	}
-	PostfixForm[Index] = ' ';
-	Index++;
+	PostfixForm[Index++] = ' ';
 	PostfixForm[Index] = '\0';
-	std::cout<<PostfixForm[Index];
-	std::cout<<std::endl;
+	//std::cout<<std::endl;
 	return 1;
 }
 

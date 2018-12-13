@@ -155,17 +155,22 @@ TEST(TFormula, check_third_formula_with_brackets) {
 
 TEST(TFormula, check_double_result_one) {
     TFormula f("23/5+5/3*(8-2)=");
-    ASSERT_EQ(14.6, f.FormulaCalculator());
+	const double result = 23./5.+5./3.*(8.-2.);
+    ASSERT_EQ(result, f.FormulaCalculator());
 }
 
 TEST(TFormula, check_double_result_two) {
     TFormula f("10/(1+4+5+6)*(1-2)=");
-    ASSERT_EQ(-0.625, f.FormulaCalculator());
+	const double result = 10./(1.+4.+5.+6.)*(1.-2.);
+    ASSERT_EQ(result, f.FormulaCalculator());
 }
 
 TEST(TFormula, check_double_result_three) {
     TFormula f("5/(6-2)*2.5=");
-    ASSERT_EQ(0.5, f.FormulaCalculator());
+	const double result = 5./(6.-2.)*2.5;
+    ASSERT_EQ(result, f.FormulaCalculator());
 }
+
+
 
 
