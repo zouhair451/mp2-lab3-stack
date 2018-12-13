@@ -3,65 +3,65 @@
 #include "tstack.h"
 #include "tformula.h"
 
+
+
+TFormula::TFormula(char* form)
+{
+	int i = 0;
+	while ((form[i] != '\0') && (i < MaxLen - 1))
+	{
+		Formula[i] = form[i];
+		i++;
+	}
+	Formula[i] = '\0';
+}
+
+
 int TFormula::FormulaChecker(int Brackets[], int size)
 {
-	int errors = 0; //Счетчик ошибок
-	int r = 1; //порядковый номер скобки
-	int n = 0; //позиция для записи в Brackets
-	TStack stack(MaxLen);
+	TStack st(MaxLen);
+	int r = 0;
+	int er = 0;
 
-
-	for (int i = 0; i < strlen(this->Formula); ++i)
+	for(int i = 0 ; i < strlen(Formula) ; i++)
 	{
-		if ((Formula[i] != '(') && (Formula[i] != ')'))
-			continue;
-
 		if (Formula[i] == '(')
 		{
-			stack.Put(r);
-			++r;
+			st.Put(r++);
 		}
-		if (Formula[i] == ')')
+		else if (Formula[i] == ')')
 		{
-			if (!stack.IsEmpty())
+			if (st.IsEmpty())
 			{
-				Brackets[n] = stack.Get();
-				Brackets[n + 1] = r;
-				++r;
-				n += 2;
+				er++;
+				if (r < size)
+				{
+					Brackets[r++] = -1;
+				}
 			}
 			else
 			{
-				Brackets[n] = 0;
-				Brackets[n + 1] = r;
-				++r;
-				n += 2;
-				errors++;
+				if (r < size)
+				{
+					Brackets[r] = st.TopElem();
+					Brackets[st.Get()] = r;
+					r++;
+				}
 			}
 		}
+
 	}
 
-	if (!stack.IsEmpty())
+	if (!st.IsEmpty())
 	{
-		while (!stack.IsEmpty())
-		{
-			Brackets[n] = stack.Get();
-			Brackets[n + 1] = 0;
-			n += 2;
-			errors++;
-		}
+		while (!st.IsEmpty())
+			Brackets[st.Get()] = -1;
+		er++;
 	}
 
-	if (errors == 0)
-		std::cout << "All Ok" << std::endl;
-	else
-		std::cout << "Total " << errors << " errors." << std::endl;
-	
-	for (int i = 0; i <= n; i+=2)
-	{
-		std::cout << Brackets[i] << "   " << Brackets[i + 1] << std::endl;
-	}
+	return er;
 }
+
 
 bool IsOperation(char c)
 {
@@ -95,151 +95,118 @@ int GetPriority(char c)
 
 int TFormula::FormulaConverter()
 {
-
 	int br[MaxLen];
-
-	if (!FormulaChecker(br , MaxLen))
-		throw "Breckets err";
+	if (FormulaChecker(br, MaxLen))
+		throw "Brackets exception";
 
 	TStack st(MaxLen);
-	int i = 0;// для Formula
-	int j = 0;// для PostfixFormula
+	int i = 0;  // Formula
 
-	while (Formula[i])
+	int j = 0; // PostfixForm
+
+	for (i = 0 ; i< strlen(Formula) ; i++)
 	{
-		// при появлении закрывающей скобки
+		if (Formula[i] == '(')
+		{
+			st.Put(Formula[i]);
+		}
 
 		if (Formula[i] == ')')
 		{
 			while (st.TopElem() != '(')
 			{
-				PostfixForm[j] = st.Get();
-				PostfixForm[j + 1] = ' ';
-				j += 2;
-				
+				PostfixForm[j++] = st.Get();
 			}
-
 			st.Get();
-			i++;
-			continue;
 		}
 
-		//при появлении операнда
 		if (IsOperand(Formula[i]) || Formula[i] == '.')
 		{
-			PostfixForm[j] = Formula[i];
-			i++;
-			j++;
+			PostfixForm[j++] = Formula[i];
 
-			if (!IsOperand(Formula[i + 1]))
+			if ((IsOperation(Formula[i + 1])) || (Formula[i + 1] == ')'))
 			{
-				PostfixForm[j] = ' ';//разделяем операнды и операции
-				j++;
-			} 
-
-			continue;
+				PostfixForm[j++] = ' ';
+			}
 		}
-
-		//при появлении операции
 
 		if (IsOperation(Formula[i]))
 		{
-			if ( (GetPriority(Formula[i]) == 0) || (GetPriority(Formula[i]) >(GetPriority( st.TopElem() ) ) ) || st.IsEmpty() )
+			if (GetPriority(Formula[i]) > st.TopElem() || st.IsEmpty())
 			{
 				st.Put(Formula[i]);
-				i++;
 			}
-
 			else
 			{
-				while (!st.IsEmpty()  && (GetPriority(Formula[i]) <= GetPriority(st.TopElem()) ) )
+				while (GetPriority(Formula[i]) <= GetPriority(st.TopElem()))
 				{
-					PostfixForm[j] = st.Get();
-					PostfixForm[j+1] = ' ';
-					j += 2;
-					
+					PostfixForm[j++] = st.Get();
 				}
+				st.Put(Formula[i]);
 			}
-			continue;
 		}
 	}
-	
 
 	while (!st.IsEmpty())
-	{
-		PostfixForm[j] = st.Get();
-		PostfixForm[j + 1] = ' ';
-		j += 2;
-	}
+		PostfixForm[j++] = st.Get();
 
 	PostfixForm[j] = '\0';
-	j = 0;
-
-	while (PostfixForm[j] != '\0')
-	{
-		std::cout << PostfixForm[j];
-	}
-	std::cout << std::endl;
 }
 
 double TFormula::FormulaCalculator()
 {
-	if (PostfixForm[0] == '\0')
-		this->FormulaConverter();
+	FormulaConverter();
+
 	double stack[MaxLen] = { 0 };
-
-	double op1;
-//	double op2;
-
 	int top = -1;
 	int i = 0;
+	
+
 	while (PostfixForm[i] != '\0')
 	{
 		if (IsOperand(PostfixForm[i]))
 		{
-			top++;
-			stack[top] = atof(PostfixForm + i);
+			stack[++top] = atof(PostfixForm + i);
 
-			while (PostfixForm[i] != ' ')
+			while (!IsOperation(PostfixForm[i + 1]) && PostfixForm[i + 1] != ' ')
+			{
 				i++;
-			i++;
+			}
 		}
 
 		if (IsOperation(PostfixForm[i]))
 		{
-			switch (PostfixForm[i])
+			if (PostfixForm[i] == '+')
 			{
-			case '*':
-				op1 = stack[top];
-				top--;
-				stack[top] *= op1;
-				break;
+				double top_elem = stack[top--];
+				double result = top_elem + stack[top--];
+				stack[++top] = result;
+			}
 
-			case '/':
-				op1 = stack[top];
-				top--;
-				stack[top] = op1 / stack[top];
-				break;
+			if (PostfixForm[i] == '-')
+			{
+				double top_elem = stack[top--];
+				double result = stack[top--] - top_elem;
+				stack[++top] = result;
+			}
 
-			case '+':
-				op1 = stack[top];
-				top--;
-				stack[top] += op1;
-				break;
+			if (PostfixForm[i] == '*')
+			{
+				double top_elem = stack[top--];
+				double result = top_elem * stack[top--];
+				stack[++top] = result;
+			}
 
-			case '-':
-				op1 = stack[top];
-				top--;
-				stack[top] = op1 - stack[top];
-				break;
-			
-			default:
-				break;
+			if (PostfixForm[i] == '/')
+			{
+				double top_elem = stack[top--];
+				double result = stack[top--] / top_elem;
+				stack[++top] = result;
 			}
 		}
-
+		i++;
 	}
-
 	return stack[top];
-
 }
+
+

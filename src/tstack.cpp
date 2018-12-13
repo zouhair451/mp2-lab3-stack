@@ -3,61 +3,74 @@
 #include <iostream>
 
 
-TStack::TStack(int Size = DefMemSize) : TDataRoot(Size)
+TStack::TStack(int Size) : TDataRoot(Size)
 {
-	if (Size < 1)
-		throw - 1;
 	top = -1;
 }
 
 void TStack::Put(const TData &Val)
 {
-	if (!IsFull())
+	if (pMem == nullptr)
 	{
-		(this->top)++;
-		pMem[(this->top)] = Val;
-		(this->DataCount)++;
+		SetRetCode(DataNoMem);
+	}
+	else if (IsFull())
+	{
+		SetRetCode(DataFull);
 	}
 	else
 	{
-		RetCode = DataFull;
+		DataCount++;
+		pMem[++top] = Val;
+		std::cout << "Put " << Val << std::endl;
 	}
 }
 
 TData TStack::Get()
 {
-	if (!IsEmpty())
+	if (pMem == nullptr)
 	{
-		RetCode = DataOK;
-		this->DataCount--;
-		return this->pMem[top--];
+		SetRetCode(DataNoMem);
+		return NULL;
+	}
+	else if (IsEmpty())
+	{
+		SetRetCode(DataEmpty);
+		return NULL;
 	}
 	else
 	{
-		this->RetCode = DataEmpty;
+		DataCount--;
+		std::cout<<"Get " << pMem[top] << std::endl;
+		return pMem[top--];
 	}
 }
 
 TData TStack::TopElem()
 {
-	if (!IsEmpty())
+	if (pMem == nullptr)
 	{
-		RetCode = DataOK;
-		return this->pMem[top];
+		SetRetCode(DataNoMem);
+	}
+	else if (IsEmpty())
+	{
+		SetRetCode(DataEmpty);
 	}
 	else
-		RetCode = DataEmpty;
-
+	{
+		return pMem[top];
+	}
 }
 
 int TStack::IsValid() 
 {
-	return true;
+	return GetRetCode();
 }
 
 void TStack::Print()
 {
 	for (int i = 0; i < DataCount; ++i)
-		std::cout << (char)pMem[i] << " ";
+		std::cout << pMem[i] << " ";
 	std::cout << "\n";
 }
+
