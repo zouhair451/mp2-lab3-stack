@@ -3,46 +3,59 @@
 
 using namespace std;
 
-TStack::TStack(int Size)
+TStack::TStack(int Size) : TDataRoot(Size)
 {
-	if (Size < 0)
-		throw - 1;
-	this->pMem = new TData[Size];
-	this->MemSize = Size;
-	this->DataCount = 0;
+	top = -1;
 }
 
 void TStack::Put(const TData &Val)
 {
-	if (!IsFull())
+	if (pMem == nullptr)
 	{
-		RetCode = DataOK;
-		pMem[DataCount] = Val;
-		DataCount++;
+		SetRetCode(DataNoMem);
 	}
-	else RetCode = DataFull;
+	else if (IsFull())
+	{
+		SetRetCode(DataFull);
+	}
+	else
+	{
+		DataCount++;
+		pMem[++top] = Val;
+	}
 }
 
 TData TStack::Get()
 {
-	if (!IsEmpty())
+	if (pMem == nullptr)
 	{
-		RetCode = DataOK;
-		int tmp = pMem[DataCount - 1];
-		DataCount--;
-		return tmp;
+		SetRetCode(DataNoMem);
 	}
-	else RetCode = DataEmpty;
+	else if (IsEmpty())
+	{
+		SetRetCode(DataEmpty);
+	}
+	else
+	{
+		DataCount--;
+		return pMem[top--];
+	}
 }
 
 TData TStack::TopElem()
 {
-	if (!IsEmpty())
+	if (pMem == nullptr)
 	{
-		RetCode = DataOK;
-		return pMem[DataCount - 1];
+		SetRetCode(DataNoMem);
 	}
-	else RetCode = DataEmpty;
+	else if (IsEmpty())
+	{
+		SetRetCode(DataEmpty);
+	}
+	else
+	{
+		return pMem[top];
+	}
 }
 
 int TStack::IsValid()
@@ -53,6 +66,7 @@ int TStack::IsValid()
 void TStack::Print()
 {	
 	for (int i = 0; i < DataCount; i++)
-		cout << pMem[i] << " ";
-	cout << endl;
+	{
+		cout << pMem[i] << ' ';
+	}
 }

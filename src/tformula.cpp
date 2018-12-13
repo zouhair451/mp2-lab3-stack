@@ -27,32 +27,40 @@ int TFormula::FormulaChecker(int Brackets[], int size)
 	int k = 0;
 	int i = 0;
 	int err = 0;
-	for (i; i < size; i++);
+	while (Formula[i] != 'a')
 	{
-		if (this->Formula[i] == '(')
+		if (Formula[i] == '(')
 		{
 			brack.Put(k);
 			k++;
 		}
-		else if (this->Formula[i] == ')')
+		else if (Formula[i] == ')')
 		{
 			if (brack.IsEmpty())
 			{
 				err++;
-				Brackets[k] = -1;
+				if (k < size)
+				{
+					Brackets[k] = -1;
+					k++;
+				}
 			}
 			else
 			{
-				Brackets[k] = brack.TopElem();
-				if (brack.TopElem() < size)
-					Brackets[brack.Get()] = k;	
+				if (k < size)
+				{
+					Brackets[k] = brack.TopElem();
+					Brackets[brack.Get()] = k;
+					k++;
+				}
 			}
-			k++;
 		}
+		i++;
 	}
-	while (!brack.IsEmpty())
+	if (!brack.IsEmpty())
 	{
-		Brackets[brack.Get()] = -1;
+		while (!brack.IsEmpty())
+			Brackets[brack.Get()] = -1;
 		err++;
 	}
 	return err;
@@ -71,6 +79,9 @@ int Priority(char op)
 
 int TFormula::FormulaConverter()
 {
+	int brack[MaxLen];
+	if (FormulaChecker(brack, MaxLen))
+		throw - 1;
 	TStack stack(MaxLen);
 	int j = 0;
 	char thrash;
@@ -108,9 +119,8 @@ int TFormula::FormulaConverter()
 					PostfixForm[j++] = stack.Get();
 				stack.Put(Formula[i]);
 			}
-	
 	}
-	while (stack.TopElem() != 'a')
+	while (!stack.IsEmpty())
 		PostfixForm[j++] = stack.Get();
 	PostfixForm[j++] = ' ';
 	cout << PostfixForm;
