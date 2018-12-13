@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <iostream>
 #include <string.h>
-#include "TStack.h"
-#include "TFormula.h"
+#include "tstack.h"
+#include "tformula.h"
 
 
-TFormula :: TFormula (char *form)                            // конструктор
+TFormula :: TFormula (char *form)                            // ГЄГ®Г­Г±ГІГ°ГіГЄГІГ®Г°
 {
 	int size = strlen(form)+1;
 	if (size>=MaxLen) throw -1;
@@ -13,7 +13,7 @@ TFormula :: TFormula (char *form)                            // конструктор
 		Formula[i] = form[i];
 }
 
-int TFormula :: FormulaChecker(int Brackets[],int size)     // проверка корректности скобок
+int TFormula :: FormulaChecker(int Brackets[],int size)     // ГЇГ°Г®ГўГҐГ°ГЄГ  ГЄГ®Г°Г°ГҐГЄГІГ­Г®Г±ГІГЁ Г±ГЄГ®ГЎГ®ГЄ
 {
 
 	int s = 0;
@@ -37,7 +37,7 @@ int TFormula :: FormulaChecker(int Brackets[],int size)     // проверка корректн
 		return 0;
 }
 
-int TFormula :: FormulaConverter()                          // преобразование в постфиксную форму
+int TFormula :: FormulaConverter()                          // ГЇГ°ГҐГ®ГЎГ°Г Г§Г®ГўГ Г­ГЁГҐ Гў ГЇГ®Г±ГІГґГЁГЄГ±Г­ГіГѕ ГґГ®Г°Г¬Гі
 {
 	int ch[MaxLen];
     if (FormulaChecker(ch, MaxLen)==0)
@@ -47,9 +47,9 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 	while (Formula[s] != '=') s++;
 	TStack st(s);
 
-	int Index = 0; //Длина постфиксной формы
-	int Priority = -1;		//Приоритет операции
-	int PriorityStackOp = -1; //Приоритет последней операции в стеке
+	int Index = 0; //Г„Г«ГЁГ­Г  ГЇГ®Г±ГІГґГЁГЄГ±Г­Г®Г© ГґГ®Г°Г¬Г»
+	int Priority = -1;		//ГЏГ°ГЁГ®Г°ГЁГІГҐГІ Г®ГЇГҐГ°Г Г¶ГЁГЁ
+	int PriorityStackOp = -1; //ГЏГ°ГЁГ®Г°ГЁГІГҐГІ ГЇГ®Г±Г«ГҐГ¤Г­ГҐГ© Г®ГЇГҐГ°Г Г¶ГЁГЁ Гў Г±ГІГҐГЄГҐ
 
 	for (int i=0; i<s; i++)
 	{
@@ -85,7 +85,7 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 							}
 							if (st.IsEmpty()) break;
 						}
-					if ((st.IsEmpty())||(Priority>PriorityStackOp))					//если больше
+					if ((st.IsEmpty())||(Priority>PriorityStackOp))					//ГҐГ±Г«ГЁ ГЎГ®Г«ГјГёГҐ
 					{
 						st.Put('+');	
 						PriorityStackOp = Priority;
@@ -227,7 +227,7 @@ int TFormula :: FormulaConverter()                          // преобразование в 
 	return 1;
 }
 
-double TFormula :: FormulaCalculator()                      // вычисление формулы
+double TFormula :: FormulaCalculator()                      // ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГҐ ГґГ®Г°Г¬ГіГ«Г»
 {
 	double str [MaxLen] = {0};
 	char y [MaxLen];
@@ -235,8 +235,8 @@ double TFormula :: FormulaCalculator()                      // вычисление формул
 	double result = 0;
 	FormulaConverter();
 
-	int ind = 0; //индекс в str
-	int i = 0; //индекс в PostfixForm
+	int ind = 0; //ГЁГ­Г¤ГҐГЄГ± Гў str
+	int i = 0; //ГЁГ­Г¤ГҐГЄГ± Гў PostfixForm
 
 	int s = 0;
 	while (Formula[s] != '=') s++;
@@ -258,11 +258,11 @@ double TFormula :: FormulaCalculator()                      // вычисление формул
 		{
 			case '+' :
 				{
-					double top_el = str[--ind]; //запоминаем элемент на вершине
-					str[ind] = 0; //обнуляем
-					result = str [--ind] + top_el; //складываем с предыдущим
-					str[ind] = result; //кладем результат
-					ind++; //перемещаем индекс на cлед позицию
+					double top_el = str[--ind]; //Г§Г ГЇГ®Г¬ГЁГ­Г ГҐГ¬ ГЅГ«ГҐГ¬ГҐГ­ГІ Г­Г  ГўГҐГ°ГёГЁГ­ГҐ
+					str[ind] = 0; //Г®ГЎГ­ГіГ«ГїГҐГ¬
+					result = str [--ind] + top_el; //Г±ГЄГ«Г Г¤Г»ГўГ ГҐГ¬ Г± ГЇГ°ГҐГ¤Г»Г¤ГіГ№ГЁГ¬
+					str[ind] = result; //ГЄГ«Г Г¤ГҐГ¬ Г°ГҐГ§ГіГ«ГјГІГ ГІ
+					ind++; //ГЇГҐГ°ГҐГ¬ГҐГ№Г ГҐГ¬ ГЁГ­Г¤ГҐГЄГ± Г­Г  cГ«ГҐГ¤ ГЇГ®Г§ГЁГ¶ГЁГѕ
 					break;
 				}
 			case '-' :
