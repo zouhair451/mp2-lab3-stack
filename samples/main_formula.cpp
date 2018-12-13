@@ -72,13 +72,11 @@ int main()
     catch (const char* excep)
     {
         cout << excep << endl;
-        f3.ShowPostfixForm();
     }
     catch (char c)
     {
         cout << "Thrown symbol: ";
         cout << c << endl;
-        f3.ShowPostfixForm();
     }
 
     system("pause");

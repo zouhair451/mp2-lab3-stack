@@ -21,7 +21,6 @@ using namespace std;
              Formula[i] = form[i];
              i++;
          }
-
      }
 
      int TFormula::FormulaChecker(int Brackets[],int size) // checker of brackets sequence' correctness
@@ -177,7 +176,8 @@ using namespace std;
      {
          int i = 0; // index for PostfixForm[]
          int j = 0; // index for StrOperand
-         //TStack OperandsStack(MaxLen); // we TStack is developed for char elements, that's why we can not use it for double operands
+         int counter = 0; // number of symbols of operand
+         //TStack OperandsStack(MaxLen); // TStack is developed for char elements, that's why we can not use it for double operands
          double OperandsStack[MaxLen]; // array, actually
          int TopOfOperandsStack = -1; // "stack", which is actually array, is empty yet
          char StrOperand[MaxLen] = ""; // temporary variable for converting the operand from array of char to double
@@ -186,23 +186,35 @@ using namespace std;
 
          while (PostfixForm[i])
          {
-             if (!isOperation(PostfixForm[i])) // if the symbol is operand
+
+             if (!isOperation(PostfixForm[i])) // if the symbol is operand or ' '
              {
                  // collect operand in the variable StrOperand
-                 StrOperand[j++] = PostfixForm[i];
-                 i++;
-                 continue; // to the next step of loop (because we need to collect operand, which may consist of several symbols
+                 if (PostfixForm[i] != ' ')
+                 {
+                     StrOperand[j++] = PostfixForm[i];
+                     counter++;
+                     i++;
+                     continue; // to the next step of loop (because we need to collect operand, which may consist of several symbols
+                 }
              }
 
              //try to convert collected operand to number
            //  if (!DoubleOperand = atof(StrOperand))
            //     throw "Operand is not a number"; // what if operand is 0 ???
-             DoubleOperand = atof(StrOperand); // convert
-             //OperandsStack.Put(DoubleOperand); // put operand in stack
-             if (TopOfOperandsStack == MaxLen)
-                throw "TopOfOperandsStackIsOutOfRange(ArrayIndexInFormulaCalculator)";
-             OperandsStack[++TopOfOperandsStack] = DoubleOperand;
-             StrOperand[0] = '\0'; // for the next step of loop
+           if (counter != 0)
+             {
+                 DoubleOperand = atof(StrOperand); // convert
+                 cout << "Operand: " << DoubleOperand << endl;
+                 //OperandsStack.Put(DoubleOperand); // put operand in stack
+                 if (TopOfOperandsStack == MaxLen)
+                    throw "TopOfOperandsStackIsOutOfRange(ArrayIndexInFormulaCalculator)";
+                 OperandsStack[++TopOfOperandsStack] = DoubleOperand;
+                 for (int m = 0; m < j; m++)
+                    StrOperand[m] = '\0'; // for the next step of loop
+                 j = 0; // for the next step of loop
+                 counter = 0;
+             }
 
              if (isOperation(PostfixForm[i])) // if the symbol is operation +, -, *, /
              {
@@ -217,13 +229,15 @@ using namespace std;
 
                  switch (PostfixForm[i])
                  {
-                     case '+': opRes = op1 + op2;
-                     case '-': opRes = op1 - op2;
-                     case '*': opRes = op1 * op2;
-                     case '/': opRes = op1 / op2;
+                     case '+': opRes = op1 + op2; break;
+                     case '-': opRes = op1 - op2; break;
+                     case '*': opRes = op1 * op2; break;
+                     case '/': opRes = op1 / op2; break;
                      default:
-                        throw "incorrect operation during formula calculation";
+                         throw PostfixForm[i];
+                        //throw "incorrect operation during formula calculation";
                  }
+                 cout << "Res: " << opRes << endl;
 
                  //OperandsStack.Put(opRes);
                 if (TopOfOperandsStack == MaxLen)
