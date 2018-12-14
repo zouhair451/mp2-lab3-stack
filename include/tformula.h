@@ -14,4 +14,5 @@ class TFormula
      bool isOperation(char c); // check whether the symbol is (, ), +, -, * or /
      void ShowFormula();
      void ShowPostfixForm();
+     void AddSpaceAfterOperand(int & j);
 };

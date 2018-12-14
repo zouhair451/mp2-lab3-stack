@@ -8,6 +8,8 @@ using namespace std;
 
      TFormula::TFormula(char *form)
      {
+         if (form == nullptr)
+            throw "nullptr in TFormula constructor";
          int i = 0;
          for (int j = 0; j < MaxLen; j++) // fill the arrays with '\0' symbol to indicate the end of the expression later.
          {

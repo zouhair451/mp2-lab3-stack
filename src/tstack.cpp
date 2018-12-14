@@ -7,6 +7,8 @@ using namespace std;
 
     TStack::TStack(int Size)
     {
+        if (Size < 0)
+            throw "negative size of stack";
         DataCount = 0;
         MemSize = Size;
         pMem = new TElem[MemSize];
@@ -40,7 +42,10 @@ using namespace std;
 	    return pMem[top];
 	}
 
-	//int TStack:: IsValid();
+	int TStack:: IsValid()
+	{
+	    return 1;
+	}
 
     void TStack:: Print()
     {

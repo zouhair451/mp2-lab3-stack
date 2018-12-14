@@ -11,6 +11,6 @@ public:
 	TData Get();
 	virtual TData TopElem();
 
-	//int IsValid();
+	int IsValid();
     void Print();
 };
