@@ -8,8 +8,11 @@ TFormula::TFormula(char *form)
 {
 	if (form != "")
 	{
-		strcpy(Formula, form);
-		strcpy(PostfixForm, " ");
+		int formLenght = strlen(form);
+		for (int i = 0; i < formLenght; i++)
+			Formula[i] = form[i];
+		for (int i = 0; i < formLenght; i++)
+			PostfixForm[i] = ' ';
 
 		int i = 0;
 		int bracketCount = 0;

@@ -4,7 +4,7 @@
 
 TStack::TStack(int size) : top(-1)
 {
-	if (size == NULL)
+	if (size == 0)
 	{
 		MemSize = DefMemSize;
 		pMem = new int[MemSize];
