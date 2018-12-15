@@ -1,6 +1,6 @@
 #include "tdataroot.h"
 
-class TStack :public TDataRoot
+class TStack: public TDataRoot
 {
 private:
 	int top; 
