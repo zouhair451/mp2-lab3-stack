@@ -7,8 +7,8 @@ TFormula::TFormula(char *form)
 {
 	if (form != "")
 	{
-		strcpy_s(Formula, form);
-		strcpy_s(PostfixForm, "");
+		strcpy(Formula, form);
+		strcpy(PostfixForm, " ");
 
 		int i = 0;
 		int bracketCount = 0;
