@@ -2,7 +2,7 @@
 #include "gtest.h"
 //#include "C:\Users\1\Documents\Visual Studio 2015\Projects\mp2-lab3-stack\include\tstack.h"
 //#include "C:\Users\1\Documents\Visual Studio 2015\Projects\mp2-lab3-stack\include\tformula.h"
-#include "stack.h"
+#include "tstack.h"
 #include "tformula.h"
 
 TEST(TStack, can_create_stack_with_positive_size)
