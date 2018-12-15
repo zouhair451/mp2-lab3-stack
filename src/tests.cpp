@@ -1,4 +1,4 @@
-
+/*
 #include "gtest.h"
 #include "tstack.h"
 #include "tformula.h"
@@ -192,3 +192,4 @@ TEST(TFormula, is_operation_test)
 
 }
 // 19 tests of TFormula. In total 31 tests.
+*/

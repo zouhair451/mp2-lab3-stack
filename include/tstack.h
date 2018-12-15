@@ -6,7 +6,7 @@ private:
 	int top; // index of the last added element
 public:
     TStack(int Size = DefMemSize);
-    ~TStack() { delete[] pMem; };
+    ~TStack() {};
 	void Put(const TData &Val);
 	TData Get();
 	virtual TData TopElem();
