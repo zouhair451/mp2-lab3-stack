@@ -1,18 +1,15 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "tformula.h"
 #include "tstack.h"
+#include <cstring>
 #include <iostream>
-#include <string>
 
 TFormula::TFormula(char *form)
 {
 	if (form != "")
 	{
-		int formLenght = strlen(form);
-		for (int i = 0; i < formLenght; i++)
-			Formula[i] = form[i];
-		for (int i = 0; i < formLenght; i++)
-			PostfixForm[i] = ' ';
+		std::strcpy(Formula, form);
+		std::strcpy(PostfixForm, "");
 
 		int i = 0;
 		int bracketCount = 0;
