@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "stack.h"
+#include "tstack.h"
 #include "tformula.h"
 //#include "C:\Users\1\Documents\Visual Studio 2015\Projects\mp2-lab3-stack\include\tformula.h"
 //#include "C:\Users\1\Documents\Visual Studio 2015\Projects\mp2-lab3-stack\include\tstack.h"
