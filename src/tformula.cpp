@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "tformula.h"
 #include "tstack.h"
 #include <iostream>
