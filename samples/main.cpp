@@ -1,4 +1,4 @@
-/* // this main.cpp is a sample for tstack.cpp
+// this main.cpp is a sample for tstack.cpp
 // ННГУ, ВМК, Курс "Методы программирования-2", С++, ООП
 //
 // Copyright (c) Гергель В.П. 28.07.2000
@@ -7,8 +7,8 @@
 // Динамические структуры данных - тестирование стека
 
 #include <iostream>
-//#include "tstack.h"
-#include "C:\Users\1\Documents\Visual Studio 2015\Projects\mp2-lab3-stack\include\tstack.h"
+#include "tstack.h"
+//#include "C:\Users\1\Documents\Visual Studio 2015\Projects\mp2-lab3-stack\include\tstack.h"
 
 using namespace std;
 
@@ -61,5 +61,3 @@ catch (const char* ex)
  // system("pause");
   return 0;
 }
-
-*/
