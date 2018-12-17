@@ -22,8 +22,9 @@ int TFormula::FormulaChecker(int Brackets[], int size)
 	TStack st(MaxLen);
 	int r = 0;
 	int er = 0;
+	int i = 0;
 
-	for(int i = 0 ; i < strlen(Formula) ; i++)
+	while(Formula[i] != '\0')
 	{
 		if (Formula[i] == '(')
 		{
@@ -49,6 +50,7 @@ int TFormula::FormulaChecker(int Brackets[], int size)
 				}
 			}
 		}
+		i++;
 
 	}
 
@@ -104,7 +106,7 @@ int TFormula::FormulaConverter()
 
 	int j = 0; // PostfixForm
 
-	for (i = 0 ; i< strlen(Formula) ; i++)
+	while(Formula[i] != '\0')
 	{
 		if (Formula[i] == '(')
 		{
@@ -145,6 +147,8 @@ int TFormula::FormulaConverter()
 				st.Put(Formula[i]);
 			}
 		}
+		
+		i++;
 	}
 
 	while (!st.IsEmpty())
