@@ -28,7 +28,7 @@ int main()
 	for (int i = 0; i < 4; i++)
 	{
 		cout << "Formula " << i + 1 << ": " << str1[i] << endl;
-		size = str1[i].length() * 2; // Так как мы составляем пары элементов(Худший случай когда все скобки '(')
+		size = str1[i].length() * 2; 
 		if (brackets != nullptr)
 			delete[] brackets;
 		brackets = new int[size];

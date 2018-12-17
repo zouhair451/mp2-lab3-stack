@@ -165,11 +165,11 @@ double TFormula::FormulaCalculator()
 	TStack st(lenghtPostfixForm);
 	int oper1 = 0, oper2 = 0;
 	int chislo = 0;
-	int coefRank = -10; // коэфф умножения для разряда числа
+	int coefRank = -10; 
 	for (int i = 0; i < lenghtPostfixForm; i++)
 	{
 		bool flagLoopDigit = false;
-		while ((i < lenghtFormula) && (isdigit(PostfixForm[i])))  //Блок Перевода чисел
+		while ((i < lenghtFormula) && (isdigit(PostfixForm[i]))) 
 		{
 			coefRank += 10;
 			chislo *= coefRank;

@@ -3,7 +3,7 @@
 class TStack: public TDataRoot
 {
 protected:
-	int top; //Индекс последнего занятого в Mem
+	int top; 
 	int* mem;
 public:
 	TStack(int len);
@@ -16,6 +16,6 @@ public:
 	void Resize(int newLen);
 	bool IsEmpty() const { return top == -1; }
 	bool IsFull() const { return top == MemSize - 1; }
-	virtual int  IsValid();                 // тестирование структуры
-	virtual void Print();              // печать значений
+	virtual int  IsValid();                 
+	virtual void Print();              
 };
