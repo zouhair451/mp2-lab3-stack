@@ -31,12 +31,12 @@ TData TStack::Get()
 	if (pMem == nullptr)
 	{
 		SetRetCode(DataNoMem);
-		return NULL;
+		return 0;
 	}
 	else if (IsEmpty())
 	{
 		SetRetCode(DataEmpty);
-		return NULL;
+		return 0;
 	}
 	else
 	{
