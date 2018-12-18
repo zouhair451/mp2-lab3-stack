@@ -1,81 +1,61 @@
-#include "tstack.h"
 #include <iostream>
-#include <algorithm>
+#include "tstack.h"
 
-TStack::TStack(int size) : top(-1)
-{
-	if (size == 0)
-	{
-		MemSize = DefMemSize;
-		pMem = new int[MemSize];
-	}
-	else if (size > 0)
-	{
-		MemSize = size;
-		pMem = new int[MemSize];
-	}
-	else
-		throw "ERR";
-}
+using namespace std;
 
-/*-----------------------------------------------*/
-TStack::TStack(const TStack & obj)
+TStack::TStack(int Size): TDataRoot(Size), top(-1)
+{}
+
+void TStack::Put(const TData &Val)
 {
-	MemSize = obj.MemSize;
-	pMem = new int[MemSize];
-	std::copy(pMem, pMem, obj.pMem);
-	top = obj.top;
-}
-/*-----------------------------------------------*/
-void TStack::Put(const TData &val)
-{
-	if (this->IsFull())
-		SetRetCode(DataErr);
+	if (pMem == nullptr)
+		SetRetCode(DataNoMem);
+	else if (IsFull())
+		SetRetCode(DataFull);
 	else
 	{
-		pMem[++top] = val;
+		pMem[++top] = Val;
 		DataCount++;
 	}
 }
-/*-----------------------------------------------*/
+
 TData TStack::Get()
 {
-	if (top != -1)
+	if (pMem == nullptr)
+		SetRetCode(DataNoMem);
+	else if (IsEmpty())
+		SetRetCode(DataEmpty);
+	else
 	{
 		DataCount--;
 		return pMem[top--];
 	}
-	else
-	{
-		SetRetCode(DataErr);
-		return DataEmpty;
-	}
 }
-/*-----------------------------------------------*/
+
 TData TStack::TopElem()
 {
-	if (top != -1)
-		return pMem[top];
-	else
+	if (pMem == nullptr)
 	{
-		SetRetCode(DataErr);
-		return DataEmpty;
+		SetRetCode(DataNoMem);
+		return -1;
 	}
+	else if (IsEmpty())
+	{
+		SetRetCode(DataEmpty);
+		return -1;
+	}
+	else
+		return pMem[top];
 }
-/*-----------------------------------------------*/
+
 int TStack::IsValid()
 {
-	int res = 0;
-
-	if (pMem == NULL)          res = 1;
-	if (MemSize < DataCount)   res += 2;
-
-	return res;
+	return GetRetCode();
 }
-/*-----------------------------------------------*/
+
 void TStack::Print()
 {
-	for (int i = 0; i < DataCount; i++)
-		std::cout << pMem[i];
-	std::cout << std::endl;
+	for (int i = 0; i<DataCount; i++)
+		cout << pMem[i] << " ";
+	cout << endl;
 }
