@@ -1,84 +1,68 @@
+#include <gtest.h>
 #include "tstack.h"
-#include "gtest.h"
 
-TEST(TStack, can_create_tstack)
+
+TEST(TStack, can_create_stack_with_positive_length)
 {
-	ASSERT_NO_THROW(TStack(10));
+	ASSERT_NO_THROW(TStack mstack(5));
 }
 
-TEST(TStack, cant_create_tstack_with_negative_length)
+TEST(TStack, cant_create_stack_with_negative_lenght)
 {
-	ASSERT_ANY_THROW(TStack St(-10));
+	ASSERT_ANY_THROW(TStack mstack(-10));
 }
 
-
-TEST(TStack, can_put_element)
+TEST(TStack, can_put_element_into_stack)
 {
-	TStack St(10);
-	ASSERT_NO_THROW(St.Put(1));
+	TStack mstack(5);
+
+	mstack.Put(13);
+
+	EXPECT_EQ(mstack.GetRetCode(), 0);
 }
 
-TEST(TStack, can_get_element)
+TEST(TStack, cant_put_element_into_full_stack)
 {
-	TStack St(10);
-	St.Put(1);
-	ASSERT_NO_THROW(St.Get());
+	TStack mstack(1);
+
+	mstack.Put(130);
+	mstack.Put(13);
+
+	EXPECT_EQ(mstack.GetRetCode(), -1);
 }
 
-TEST(TStack, get_element_is_correct)
+TEST(TStack, can_get_top_element_with_deleting)
 {
-	TStack St(10);
-	St.Put(1);
-	St.Put(5);
-	EXPECT_EQ(5, St.Get());
+	TStack mstack(5);
+
+	mstack.Put(13);
+
+	EXPECT_EQ(mstack.Get(), 13);
 }
 
-TEST(TStack, can_change_retcode_when_get_element_in_empty_stack)
+TEST(TStack, cant_get_top_element_if_stack_is_empty)
 {
-	TStack St(10);
-	St.Get();
-	EXPECT_EQ(DataEmpty, St.GetRetCode());
+	TStack mstack(1);
+
+	mstack.Get();
+
+	EXPECT_EQ(mstack.GetRetCode(), -1);
 }
 
-TEST(TStack, can_change_retcode_when_put_in_full_tstack)
+TEST(TStack, can_get_top_element_without_deleting)
 {
-	TStack St(2);
-	St.Put(1);
-	St.Put(2);
-	St.Put(3);
-	ASSERT_EQ(DataFull, St.GetRetCode());
+	TStack mstack(5);
+
+	mstack.Put(14);
+
+	EXPECT_EQ(14, mstack.TopElem());
 }
 
-TEST(TStack, top_elememt_can_change_after_put_element)
+TEST(TStack, cant_get_top_element_if_it_is_empty_without_deleting)
 {
-	TStack St(10);
-	St.Put(1);
-	St.Put(5);
-	ASSERT_EQ(5, St.TopElem());
-}
+	TStack mstack(4);
 
+	mstack.TopElem();
 
-TEST(TStack, top_element_can_change_after_get_element)
-{
-	TStack St(10);
-	St.Put(1);
-	St.Put(5);	
-	St.Get();
-	ASSERT_EQ(1, St.TopElem());
-}
-
-TEST(TStack, top_element_cant_change_when_put_element_in_full_stack)
-{
-	TStack St(2);
-	St.Put(1);
-	St.Put(2);
-	St.Put(3);
-	ASSERT_EQ(2, St.TopElem());
-}
-
-TEST(TStack, can_change_retcode_when_get_top__element_in_empty_tstack)
-{
-	TStack St(10);
-	St.TopElem();
-	ASSERT_EQ(DataEmpty, St.GetRetCode());
+	EXPECT_EQ(mstack.GetRetCode(), -1);
 }
