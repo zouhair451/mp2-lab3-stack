@@ -1,106 +1,279 @@
-#include"tstack.h"
-#include <gtest\gtest.h>
-#include"tformula.h"
+﻿#include "tstack.h"
+#include "tformula.h"
 
-TEST(TStack, Respond_system_then_create_stack_with_too_big_size)
+#include "gtest.h"
+
+TEST(TStack, can_create_stack)
 {
-	int size = 10;
-	TStack st(size), st1(MaxSizeStack + size);
+	TStack st(5);
 
-
-	EXPECT_NE(DataNoMem, st.GetRetCode());
-	EXPECT_EQ(DataNoMem, st1.GetRetCode());
-}
-
-TEST(TStack, check_IsEmpty)
-{
-	int size = 10;
-	TStack st(size);
-
-
-	EXPECT_TRUE(st.IsEmpty());
-}
-
-TEST(TStack, check_IsFull)
-{
-	int size = 10;
-	TStack st(size);
-
-
-	EXPECT_FALSE(st.IsFull());
-
-
-	for (int i = 0; i < size; i++)
-	{
-		st.Put(i);
-	}
-	EXPECT_TRUE(st.IsFull());
-}
-
-TEST(TStack, can_put_data_in_empty_stack)
-{
-	int size = 10;
-	TStack st(size);
-	st.Put(size);
-
-
-	EXPECT_EQ(size, st.Get());
-}
-
-TEST(TStack, can_not_put_data_in_Full_stack)
-{
-	int size = 10;
-	TStack st(size);
-	for (int i = 0; i < size; i++)
-	{
-		st.Put(i);
-	}
-
-
-	st.Put(size);
-	EXPECT_EQ(DataFull, st.GetRetCode());
-}
-
-TEST(TStack, can_get_data_in_full_stack)
-{
-	int size = 10;
-	TStack st(size);
-	for (int i = 0; i < size; i++)
-	{
-		st.Put(i);
-	}
-
-
-	EXPECT_TRUE(st.IsFull());
-	int a = st.Get();
 	EXPECT_EQ(DataOK, st.GetRetCode());
 }
 
-TEST(TStack, can_not_get_data_in_empty_stack)
+TEST(TStack, cant_put_if_no_mem)
 {
-	int size = 10;
-	TStack st(size);
-	int i = st.Get();
+	TStack st(0);
+	st.Put(5);
 
+	EXPECT_EQ(DataNoMem, st.GetRetCode());
+}
+
+TEST(TStack, cant_put_if_stack_full)
+{
+	TStack st(1);
+	st.Put(5);
+	st.Put(5);
+
+	EXPECT_EQ(DataFull, st.GetRetCode());
+}
+
+TEST(TStack, can_put_if_ok_1)
+{
+	TStack st(1);
+	st.Put(5);
+
+	EXPECT_EQ(DataOK, st.GetRetCode());
+}
+
+TEST(TStack, can_put_if_ok_2)
+{
+	TStack st(1);
+	st.Put(5);
+
+	EXPECT_EQ(5, st.TopElem());
+}
+
+TEST(TStack, cant_get_if_no_mem)
+{
+	TStack st(0);
+	st.Get();
+
+	EXPECT_EQ(DataNoMem, st.GetRetCode());
+}
+
+TEST(TStack, cant_get_if_stack_empty)
+{
+	TStack st(1);
+	st.Get();
 
 	EXPECT_EQ(DataEmpty, st.GetRetCode());
 }
 
-TEST(TFormula, can_create_right_formula)
+TEST(TStack, can_get_if_ok_1)
 {
-	char str[] = "(3+4)";
-	TFormula formula(str);
-	int const size = 10;
-	int mass[size];
+	TStack st(1);
+	st.Put(5);
+	st.Get();
 
-
-	EXPECT_EQ(0, formula.FormulaChecker(mass, size));
+	EXPECT_EQ(DataOK, st.GetRetCode());
 }
 
-TEST(TFormula, can_colculate)
+TEST(TStack, can_get_if_ok_2)
 {
-	char str[] = "(3+9+4-5)";
-	TFormula formula(str);
-	formula.FormulaConverter();
-	EXPECT_DOUBLE_EQ(11.0, formula.FormulaCalculator()); system("pause");
+	TStack st(1);
+	st.Put(5);
+	int k = st.Get();
+
+	EXPECT_EQ(5, k);
+}
+
+TEST(TStack, cant_top_elem_if_no_mem)
+{
+	TStack st(0);
+	st.TopElem();
+
+	EXPECT_EQ(DataNoMem, st.GetRetCode());
+}
+
+TEST(TStack, cant_top_elem_if_stack_empty)
+{
+	TStack st(1);
+	st.TopElem();
+
+	EXPECT_EQ(DataEmpty, st.GetRetCode());
+}
+
+TEST(TStack, can_top_elem_if_ok_1)
+{
+	TStack st(1);
+	st.Put(5);
+	st.TopElem();
+
+	EXPECT_EQ(DataOK, st.GetRetCode());
+}
+
+TEST(TStack, can_top_elem_if_ok_2)
+{
+	TStack st(1);
+	st.Put(5);
+	int k = st.TopElem();
+
+	EXPECT_EQ(5, k);
+}
+
+TEST(TFormula, can_create_formula)
+{
+	char formula[255] = "2+3";
+	ASSERT_NO_THROW(TFormula F(formula));
+}
+
+TEST(TFormula, check_formula_with_correct_brackets_only)
+{
+	char formula[255] = "(()())";
+	TFormula F(formula);
+	int br[6];
+	int s = 6;
+
+	EXPECT_EQ(0, F.FormulaChecker(br, s));
+}
+
+TEST(TFormula, check_formula_with_wrong_brackets_only)
+{
+	char formula[255] = "))(()";
+	TFormula F(formula);
+	int br[5];
+	int s = 5;
+
+	EXPECT_EQ(3, F.FormulaChecker(br, s));
+
+}
+
+TEST(TFormula, check_formula_with_correct_brackets)
+{
+	char formula[255] = "(2+3)*(5.2-3.1)";
+	TFormula F(formula);
+	int br[4];
+	int s = 4;
+
+	EXPECT_EQ(0, F.FormulaChecker(br, s));
+}
+
+TEST(TFormula, check_formula_with_wrong_brackets)
+{
+	char formula[255] = "(9+2)-5)+(6.1+78.5";
+	TFormula F(formula);
+	int br[4];
+	int s = 4;
+
+	EXPECT_EQ(2, F.FormulaChecker(br, s));
+}
+
+TEST(TFormula, can_convert_formula_with_correct_brackets)
+{
+	char formula[255] = "(2+3)*(5.2-3.1)";
+	TFormula F(formula);
+
+	ASSERT_NO_THROW(F.FormulaConverter());
+}
+
+TEST(TFormula, cant_convert_formula_with_wrong_brackets)
+{
+	char formula[255] = "(9+2)-5)+(6.1+78.5";
+	TFormula F(formula);
+
+	ASSERT_ANY_THROW(F.FormulaConverter());
+}
+
+TEST(TFormula, can_calculate_if_no_postfixform)
+{
+	char formula[255] = "(2+3)*(5.2-3.1)";
+	TFormula F(formula);
+
+	EXPECT_DOUBLE_EQ(10.5, F.FormulaCalculator());
+}
+
+TEST(TFormula, calculate_integer_without_brackets)
+{
+	char formula[255] = "2+3*4+5";
+	TFormula F(formula);
+
+	EXPECT_DOUBLE_EQ(19.0, F.FormulaCalculator());
+}
+
+TEST(TFormula, calculate_integer_with_brackets)
+{
+	char formula[255] = "(2+3)*(4+5)";
+	TFormula F(formula);
+
+	EXPECT_DOUBLE_EQ(45.0, F.FormulaCalculator());
+}
+
+TEST(TFormula, calculate_double_without_brackets)
+{
+	char formula[255] = "2.1+3*4+5.2";
+	TFormula F(formula);
+
+	EXPECT_DOUBLE_EQ(19.3, F.FormulaCalculator());
+}
+
+TEST(TFormula, calculate_double_with_brackets)
+{
+	char formula[255] = "(2.1+3)*(4+5.2)";
+	TFormula F(formula);
+
+	EXPECT_DOUBLE_EQ(46.92, F.FormulaCalculator());
+}
+
+TEST(TFormula, add_integer)
+{
+	char formula[255] = "15+37";
+	TFormula F(formula);
+
+	EXPECT_DOUBLE_EQ(52.0, F.FormulaCalculator());
+}
+
+TEST(TFormula, sub_integer)
+{
+	char formula[255] = "15-37";
+	TFormula F(formula);
+
+	EXPECT_DOUBLE_EQ(-22.0, F.FormulaCalculator());
+}
+
+TEST(TFormula, multi_integer)
+{
+	char formula[255] = "15*37";
+	TFormula F(formula);
+
+	EXPECT_DOUBLE_EQ(555.0, F.FormulaCalculator());
+}
+
+TEST(TFormula, div_integer)
+{
+	char formula[255] = "15/37";
+	TFormula F(formula);
+
+	EXPECT_NEAR(0.405405, F.FormulaCalculator(), 0.0000005);
+}
+
+TEST(TFormula, add_double)
+{
+	char formula[255] = "1.5+3.7";
+	TFormula F(formula);
+
+	EXPECT_DOUBLE_EQ(5.2, F.FormulaCalculator());
+}
+
+TEST(TFormula, sub_double)
+{
+	char formula[255] = "1.5-3.7";
+	TFormula F(formula);
+
+	EXPECT_DOUBLE_EQ(-2.2, F.FormulaCalculator());
+}
+
+TEST(TFormula, multi_double)
+{
+	char formula[255] = "1.5*3.7";
+	TFormula F(formula);
+
+	EXPECT_DOUBLE_EQ(5.55, F.FormulaCalculator());
+}
+
+TEST(TFormula, div_double)
+{
+	char formula[255] = "1.5/3.7";
+	TFormula F(formula);
+
+	EXPECT_NEAR(0.405405, F.FormulaCalculator(), 0.0000005);
 }

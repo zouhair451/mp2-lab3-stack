@@ -1,215 +1,216 @@
-#include "tformula.h"
-#include "tstack.h"
-#include <cstring>
+#include <stdio.h>
 #include <iostream>
-using namespace std;
+#include "tstack.h"
+#include "tformula.h"
 
-TFormula::TFormula(char *form)
+
+
+TFormula::TFormula(char* form)
 {
-	strcpy(Formula, form);
+	int i = 0;
+	while ((form[i] != '\0') && (i < MaxLen - 1))
+	{
+		Formula[i] = form[i];
+		i++;
+	}
+	Formula[i] = '\0';
 }
+
 
 int TFormula::FormulaChecker(int Brackets[], int size)
 {
-	int BrNum = 0;
-	int BrQuant = 0;
+	TStack st(MaxLen);
+	int r = 0;
+	int er = 0;
 	int i = 0;
 
-	TStack st(size);
-
-	while (Formula[i])
+	while(Formula[i] != '\0')
 	{
-		if ((Formula[i] <= '0') && (Formula[i] >= '9') &&
-			(Formula[i] != '(') && (Formula[i] != ')') &&
-			(Formula[i] != '+') && (Formula[i] != '-') && (Formula[i] != '*') && (Formula[i] != '/') &&
-			(Formula[i] != ' ') && (Formula[i] != '.'))
-			throw(-1);
-		
 		if (Formula[i] == '(')
 		{
-			st.Put(++BrNum);
+			st.Put(r++);
 		}
-
 		else if (Formula[i] == ')')
 		{
 			if (st.IsEmpty())
 			{
-				Brackets[BrQuant++] = 0;
-				Brackets[BrQuant++] = ++BrNum;
+				er++;
+				if (r < size)
+				{
+					Brackets[r++] = -1;
+				}
 			}
 			else
 			{
-				Brackets[BrQuant++] = st.Get();
-				Brackets[BrQuant++] = ++BrNum;
+				if (r < size)
+				{
+					Brackets[r] = st.TopElem();
+					Brackets[st.Get()] = r;
+					r++;
+				}
 			}
 		}
 		i++;
+
 	}
 
-	while (!st.IsEmpty())
+	if (!st.IsEmpty())
 	{
-		Brackets[BrQuant++] = 0;
-		st.Get();
+		while (!st.IsEmpty())
+			Brackets[st.Get()] = -1;
+		er++;
 	}
 
+	return er;
+}
+
+
+bool IsOperation(char c)
+{
+	if ((c == '+') || (c == '-') || (c == '*') || (c == '/'))
+		return true;
+	else
+		return false;
+}
+
+bool IsOperand(char c)
+{
+	if (c >= '0' && c <= '9')
+		return true;
+	else
+		return false;
+}
+
+int GetPriority(char c)
+{
+	switch (c)
+	{
+	case '(': return 0;
+	case ')': return 1;
+	case '+': return 2;
+	case '-': return 2;
+	case '*': return 3;
+	case '/': return 3;
+	default: return -1;
+	}
 }
 
 int TFormula::FormulaConverter()
 {
-	TStack OpSt(255);
-	TStack PrSt(255);
+	int br[MaxLen];
+	if (FormulaChecker(br, MaxLen))
+		throw "Brackets exception";
 
-	int ResNum = 0;
-	int i = 0;
+	TStack st(MaxLen);
+	int i = 0;  // Formula
 
-	while (Formula[i])
+	int j = 0; // PostfixForm
+
+	while(Formula[i] != '\0')
 	{
-		if (((Formula[i] <= '0') || (Formula[i] >= '9')) &&
-			(Formula[i] != '(') && (Formula[i] != ')') &&
-			(Formula[i] != '+') && (Formula[i] != '-') && (Formula[i] != '*') && (Formula[i] != '/') &&
-			(Formula[i] != ' ') && (Formula[i] != '.'))
-			throw(-1);	
-
-		if (((Formula[i] >= '0') && (Formula[i] <= '9')) || (Formula[i] == '.'))
+		if (Formula[i] == '(')
 		{
-			while (((Formula[i] >= '0') && (Formula[i] <= '9')) || (Formula[i] == '.'))
-			{
-				PostfixForm[ResNum++] = Formula[i];
-				i++;
-			}
-			PostfixForm[ResNum++] = ' ';
+			st.Put(Formula[i]);
 		}
 
-		else
+		if (Formula[i] == ')')
 		{
-			switch (Formula[i])
+			while (st.TopElem() != '(')
 			{
-			case '(':
-			{
-				OpSt.Put('(');
-				PrSt.Put(0);
-				break;
+				PostfixForm[j++] = st.Get();
 			}
-			case ')':
+			st.Get();
+		}
+
+		if (IsOperand(Formula[i]) || Formula[i] == '.')
+		{
+			PostfixForm[j++] = Formula[i];
+
+			if ((IsOperation(Formula[i + 1])) || (Formula[i + 1] == ')'))
 			{
-				while (OpSt.TopElem() != '(')
+				PostfixForm[j++] = ' ';
+			}
+		}
+
+		if (IsOperation(Formula[i]))
+		{
+			if (GetPriority(Formula[i]) > st.TopElem() || st.IsEmpty())
+			{
+				st.Put(Formula[i]);
+			}
+			else
+			{
+				while (GetPriority(Formula[i]) <= GetPriority(st.TopElem()))
 				{
-					PostfixForm[ResNum++] = OpSt.Get();
-					PostfixForm[ResNum++] = ' ';
-					PrSt.Get();
+					PostfixForm[j++] = st.Get();
 				}
-				PrSt.Get();
-				OpSt.Get();
-				break;
+				st.Put(Formula[i]);
 			}
-			case '+':
-			{
-				while ((PrSt.TopElem() >= 2) && !(OpSt.IsEmpty()))
-				{
-					PostfixForm[ResNum++] = OpSt.Get();
-					PostfixForm[ResNum++] = ' ';
-					PrSt.Get();
-				}
-				OpSt.Put('+');
-				PrSt.Put(2);
-				break;
-			}
-			case '-':
-			{
-				while ((PrSt.TopElem() >= 2) && !(OpSt.IsEmpty()))
-				{
-					PostfixForm[ResNum++] = OpSt.Get();
-					PostfixForm[ResNum++] = ' ';
-					PrSt.Get();
-				}
-				OpSt.Put('-');
-				PrSt.Put(2);
-				break;
-			}
-			case '*':
-			{
-				while ((PrSt.TopElem() >= 3) && !(OpSt.IsEmpty()))
-				{
-					PostfixForm[ResNum++] = OpSt.Get();
-					PostfixForm[ResNum++] = ' ';
-					PrSt.Get();
-				}
-				OpSt.Put('*');
-				PrSt.Put(3);
-				break;
-			}
-			case '/':
-			{
-				while ((PrSt.TopElem() >= 3) && !(OpSt.IsEmpty()))
-				{
-					PostfixForm[ResNum++] = OpSt.Get();
-					PostfixForm[ResNum++] = ' ';
-					PrSt.Get();
-				}
-				OpSt.Put('/');
-				PrSt.Put(3);
-				break;
-			}
-			}		
-			i++;
-		}		
+		}
+		
+		i++;
 	}
 
-	while (!OpSt.IsEmpty())
-	{
-		PostfixForm[ResNum++] = OpSt.Get();
-		PostfixForm[ResNum++] = ' ';
-	}
+	while (!st.IsEmpty())
+		PostfixForm[j++] = st.Get();
 
-	PostfixForm[ResNum++] = '\0';
-	return ResNum;
-
+	PostfixForm[j] = '\0';
 }
 
 double TFormula::FormulaCalculator()
 {
 	FormulaConverter();
 
-	TStack St(255);
-
+	double stack[MaxLen] = { 0 };
+	int top = -1;
 	int i = 0;
-	int k = 0;
+	
 
-
-	while (PostfixForm[i])
+	while (PostfixForm[i] != '\0')
 	{
-		if ((PostfixForm[i] >= '0') && (PostfixForm[i] <= '9'))
+		if (IsOperand(PostfixForm[i]))
 		{
-			k = k * 10 + ((int)(PostfixForm[i]) - '0');
-			if (!((PostfixForm[i + 1] >= '0') && (PostfixForm[i + 1] <= '9')))
-			{				
-				St.Put(k);
-				k = 0;
-			}
-			
-				
-		}
-		else if ((PostfixForm[i] == '+') || (PostfixForm[i] == '-') || (PostfixForm[i] == '*') || (PostfixForm[i] == '/'))
-		{
-			double b = St.Get();
-			double a = St.Get();
-			switch (PostfixForm[i])
+			stack[++top] = atof(PostfixForm + i);
+
+			while (!IsOperation(PostfixForm[i + 1]) && PostfixForm[i + 1] != ' ')
 			{
-				case '+':
-					St.Put(a + b);
-					break;
-				case '-':
-					St.Put(a - b);
-					break;
-				case '*':
-					St.Put(a * b);
-					break;
-				case '/':
-					St.Put(a / b);
-					break;
+				i++;
+			}
+		}
+
+		if (IsOperation(PostfixForm[i]))
+		{
+			if (PostfixForm[i] == '+')
+			{
+				double top_elem = stack[top--];
+				double result = top_elem + stack[top--];
+				stack[++top] = result;
+			}
+
+			if (PostfixForm[i] == '-')
+			{
+				double top_elem = stack[top--];
+				double result = stack[top--] - top_elem;
+				stack[++top] = result;
+			}
+
+			if (PostfixForm[i] == '*')
+			{
+				double top_elem = stack[top--];
+				double result = top_elem * stack[top--];
+				stack[++top] = result;
+			}
+
+			if (PostfixForm[i] == '/')
+			{
+				double top_elem = stack[top--];
+				double result = stack[top--] / top_elem;
+				stack[++top] = result;
 			}
 		}
 		i++;
 	}
-	return St.TopElem();
+	return stack[top];
 }
+
+
