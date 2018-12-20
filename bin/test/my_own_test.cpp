@@ -65,3 +65,58 @@ TEST(TStack, top_element_cant_change_when_put_element_in_full_stack)
 	ASSERT_EQ(2, St.TopElem());
 }
 
+TEST(TFormula, can_create_formula)
+{
+	ASSERT_NO_THROW(TFormula f("(1+2)"));
+}
+
+TEST(TFormula, can_check_formula)
+{
+	TFormula f("(1+2)*((3-4)/(5+6))+7");
+	int br[255];
+	ASSERT_NO_THROW(f.FormulaChecker(br, 255));
+}
+
+TEST(TFormula, check_wrong_brackets)
+{
+	TFormula f("(1*2)+((3-4");
+	int br[4] = { 0 };
+	EXPECT_EQ(1, f.FormulaChecker(br,4));
+}
+
+TEST(TFormula, check_right_brackets)
+{
+	TFormula f("1*2+3-4");
+	int br[4] = { 0 };
+	EXPECT_EQ(0, f.FormulaChecker(br, 4));
+}
+
+TEST(TFormula, can_calculate_formula)
+{
+	TFormula f("(1*2)+(3-4)");
+	EXPECT_EQ(1, f.FormulaCalculator());
+}
+
+TEST(TFormula, add_integer)
+{
+	TFormula f("23+32");
+	EXPECT_DOUBLE_EQ(55.0, f.FormulaCalculator());
+}
+
+TEST(TFormula, sub_integer)
+{
+	TFormula f("23-32");
+	EXPECT_DOUBLE_EQ(-9, f.FormulaCalculator());
+}
+
+TEST(TFormula, multi_integer)
+{
+	TFormula f("23*32");
+	EXPECT_DOUBLE_EQ(736, f.FormulaCalculator());
+}
+
+TEST(TFormula, div_integer)
+{
+	TFormula f("32/64");
+	EXPECT_DOUBLE_EQ(0.5, f.FormulaCalculator());
+}
