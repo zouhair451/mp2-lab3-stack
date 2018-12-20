@@ -3,11 +3,11 @@
 
 using namespace std;
 
-TStack::TStack(int Size = DefMemSize) : TDataRoot(Size), top(-1) {}
+TStack::TStack(int Size) : TDataRoot(Size), top(-1) {}
 
 void TStack::Put(const TData &Val)
 {
-	if (IsFull)
+	if (IsFull())
 	{
 		SetRetCode(DataFull);
 	}
@@ -25,7 +25,7 @@ void TStack::Put(const TData &Val)
 
 TData TStack::Get()
 {
-	if (IsEmpty)
+	if (IsEmpty())
 	{
 		SetRetCode(DataEmpty);
 		return -1;
@@ -44,7 +44,7 @@ TData TStack::Get()
 
 TData TStack::TopElem()
 {
-	if (IsEmpty)
+	if (IsEmpty())
 	{
 		SetRetCode(DataEmpty);
 		return -1;
