@@ -11,6 +11,10 @@
 
 TDataRoot::TDataRoot(int Size): TDataCom()
 {
+  if (Size < 0)
+  {
+    SetRetCode(DataErr);
+  }
   DataCount = 0;
   MemSize = Size;
   if (Size == 0) // память будет установлена методом SetMem
@@ -18,7 +22,7 @@ TDataRoot::TDataRoot(int Size): TDataCom()
     pMem = NULL;
     MemType = MEM_RENTER;
   }
-  else // память выделяется объектом
+  if (Size > 0) // память выделяется объектом
   {
     pMem = new TElem[MemSize];
     MemType = MEM_HOLDER;
@@ -43,10 +47,14 @@ void TDataRoot::SetMem(void *p, int Size) // задание памяти
 
 bool TDataRoot::IsEmpty(void) const // контроль пустоты СД
 {
-  return DataCount == 0;
+  if (MemSize != 0)
+    return DataCount == 0;
+  return 0;
 } /*-------------------------------------------------------------------------*/
 
 bool TDataRoot::IsFull(void) const // контроль переполнения СД
 {
-  return DataCount == MemSize;
+  if (MemSize != 0)
+    return DataCount == MemSize;
+  return 0;
 } /*-------------------------------------------------------------------------*/

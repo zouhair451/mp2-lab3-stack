@@ -1,10 +1,6 @@
 #include <cstring>
 #include <cstdlib>
 #include "tformula.h"
-#include "tstack.h"
-#include <iostream>
-
-using namespace std;
 
 TFormula::TFormula(char* form)
 {
@@ -123,10 +119,10 @@ int TFormula::FormulaConverter()
 			}
 			else
 			{
-				while (stack.TopElem() != '(') // выталкиваем все элементы, приоритет которых больше или равен приоритету операции сложения (вычитания)
+				// выталкиваем все элементы, приоритет которых больше или равен приоритету операции сложения (вычитания), или до тех пор, пока стэк не станет пустым
+				while ( !(stack.IsEmpty()) && stack.TopElem() != '(')
 				{
-					PostfixForm[j] = stack.Get();
-					++j;
+					PostfixForm[j++] = stack.Get();
 				}
 				stack.Put(Formula[i]); // кладём операцию сложения (вычитания) в стэк
 			}
@@ -144,8 +140,9 @@ int TFormula::FormulaConverter()
 			}
 			else
 			{
-				while ( (stack.TopElem() != '(') && (stack.TopElem() != '+') &&
-					(stack.TopElem() != '-') ) // выталкиваем все элементы, приоритет которых больше или равен приоритету операции умножения (деления)
+				// выталкиваем все элементы, приоритет которых больше или равен приоритету операции умножения (деления), или пока стэк не станет пустым
+				while ( !(stack.IsEmpty()) && (stack.TopElem() != '(') && (stack.TopElem() != '+') &&
+					(stack.TopElem() != '-') )
 				{
 					PostfixForm[j] = stack.Get();
 					++j;
