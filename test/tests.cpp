@@ -120,4 +120,3 @@ TEST(TFormula, div_integer)
 	TFormula f("32/64");
 	EXPECT_DOUBLE_EQ(0.5, f.FormulaCalculator());
 }
-}
