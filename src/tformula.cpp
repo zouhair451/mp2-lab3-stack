@@ -1,249 +1,167 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
-#include<cstring>
-#include<iostream>
+﻿#include <iostream>
 #include "tformula.h"
-#include"tstack.h"
+#include "tstack.h"
+#include "stdlib.h"
+using namespace std;
 
-TFormula::TFormula(char * form)
+TFormula::TFormula(char *form)
 {
-	lenghtFormula = strlen(form);
-	lenghtPostfixForm = 0;
-	if (form != nullptr && lenghtFormula != 0)
+	int i = 0;
+	char *j = form;
+	int k = 0;
+	while (*j) j++;
+	int len = j - form;
+	for (i = 0; i < len; i++)
 	{
-		strcpy(Formula, form);
-		strcpy(PostfixForm, "");
+		this->Formula[i] = form[i];
 	}
-	else
-		throw "Formula is empty!";
-}
-
-TFormula::TFormula(std::string form)
-{
-	lenghtFormula = form.length();
-	lenghtPostfixForm = 0;
-	if (lenghtFormula != 0)
-	{
-		strcpy(Formula, (char*)form.c_str());
-		strcpy(PostfixForm, "");
-	}
-	else
-		throw "Formula is empty!";
+	for (i = len; i < MaxLen; i++)
+		Formula[i] = 'a';
+	for (i = 0; i < MaxLen; i++)
+		PostfixForm[i] = 0;
 }
 
 int TFormula::FormulaChecker(int Brackets[], int size)
 {
-	TStack st(lenghtFormula);
-	int index = 0;
-	int errCounter = 0;
-	for (int i = 0; i < lenghtFormula; i++)
+	TStack brack(MaxLen);
+	int k = 0;
+	int i = 0;
+	int err = 0;
+	for (i; i < size; i++);
 	{
-		if (!((Formula[i] == '(') || (Formula[i] == ')')))
-			continue;
-		if (Formula[i] == '(')
+		if (this->Formula[i] == '(')
 		{
-			st.Put(i);
+			brack.Put(k);
+			k++;
 		}
-		if (Formula[i] == ')')
+		else if (this->Formula[i] == ')')
 		{
-			if (!st.IsEmpty())
+			if (brack.IsEmpty())
 			{
-				if (index + 2 < size)
-				{
-					Brackets[index++] = st.Get();
-					Brackets[index++] = i;
-					st.Pop();
-				}
-				else
-					throw "Brackets_index_out_range,need more memory";
+				err++;
+				Brackets[k] = -1;
 			}
 			else
 			{
-				if (index + 1 < size)
-				{
-					Brackets[index++] = 0;
-					errCounter++;
-				}
-				else
-					throw "Brackets_index_out_range,need more memory";
+				Brackets[k] = brack.TopElem();
+				if (brack.TopElem() < size)
+					Brackets[brack.Get()] = k;
 			}
+			k++;
 		}
 	}
-	while (!st.IsEmpty())
+	while (!brack.IsEmpty())
 	{
-		if (index + 2 < size)
-		{
-			errCounter++;
-			Brackets[index++] = st.Get();
-			Brackets[index++] = 0;
-			st.Pop();
-		}
-		else
-			throw "Brackets_index_out_range,need more memory";
+		Brackets[brack.Get()] = -1;
+		err++;
 	}
-	std::cout << "Amount of Error = " << errCounter << std::endl;
-	std::cout << "Open Bracket | Close Bracket" << std::endl;
-	for (int i = 0; i < index; i++)
-	{
-		if (i % 2 == 0)
-			std::cout << "\t    " << Brackets[i] << "|";
-		else
-			std::cout << Brackets[i] << std::endl;
-	}
-
-	return errCounter;
+	return err;
 }
+
+int Priority(char op)
+{
+	if (op == '(') return 0;
+	if ((op = ')')) return 1;
+	if ((op == '+') || (op = '-')) return 2;
+	if ((op == '*') || (op = '/')) return 3;
+	return -1;
+}
+
+
 
 int TFormula::FormulaConverter()
 {
-	int indexPostfix = 0;
-	int* brackets = new int[lenghtFormula * 2];
-	if (FormulaChecker(brackets, lenghtFormula * 2) != 0)
-		throw "wrong Formula!";
-	TStack st(lenghtFormula);
-	for (int i = 0; i < lenghtFormula; i++)
+	TStack stack(MaxLen);
+	int j = 0;
+	char thrash;
+	int len = 0;
+	while (Formula[len] != 'a')
+		len++;
+	for (int i = 0; i < len; i++)
 	{
-		if (isdigit(Formula[i]))
+		if (Formula[i] == ')')
 		{
-			if (indexPostfix != 0)
+			while (stack.TopElem() != '(')
 			{
-				if (isdigit(PostfixForm[indexPostfix - 1]))
-					PostfixForm[indexPostfix++] = ' ';
+				PostfixForm[j++] = stack.Get();
+				PostfixForm[j++] = ' ';
 			}
-			for (i; (i < 20) && isdigit(Formula[i]); i++)
-				PostfixForm[indexPostfix++] = Formula[i];
+			thrash = stack.Get();
+			if (!stack.IsEmpty()) PostfixForm[j++] = stack.Get();
+			continue;
 		}
-		if (Formula[i] == '+' || Formula[i] == '-' || Formula[i] == '*'
-			|| Formula[i] == '/' || Formula[i] == '(' || Formula[i] == ')')
-		{
-			if (st.IsEmpty())
+		else
+			if ((Formula[i] >= '0') && (Formula[i] <= '9'))
 			{
-				st.Put(Formula[i]);
-			}
-			else if (Formula[i] == '(')
-			{
-				st.Put(Formula[i]);
-			}
-			else if (Formula[i] == ')')
-			{
-				while (PriorityOper(st.Get()) != PriorityOper('('))
-				{
-					PostfixForm[indexPostfix++] = st.Get();
-					st.Pop();
-				}
-				if (PriorityOper(st.Get()) == PriorityOper('('))
-					st.Pop();
-			}
-			else if (PriorityOper(Formula[i]) > PriorityOper(st.Get()))
-			{
-				st.Put(Formula[i]);
+				while ((Formula[i] >= '0') && (Formula[i] <= '9'))
+					PostfixForm[j++] = Formula[i++];
+				PostfixForm[j++] = ' ';
+				i--;
+				continue;
 			}
 			else
-			{
-				while ((!st.IsEmpty()) && (PriorityOper(Formula[i]) <= PriorityOper(st.Get())))
+				if ((Priority(Formula[i]) == 0) || (Priority(Formula[i]) > Priority(stack.TopElem())) || (stack.IsEmpty()))
+					stack.Put(Formula[i]);
+				else
 				{
-					PostfixForm[indexPostfix++] = st.Get();
-					st.Pop();
+					while (Priority(stack.TopElem()) < Priority(Formula[i]))
+						PostfixForm[j++] = stack.Get();
+					stack.Put(Formula[i]);
 				}
-				st.Put(Formula[i]);
-			}
-		}
+
 	}
-	while (!st.IsEmpty())
-	{
-		PostfixForm[indexPostfix++] = st.Get();
-		st.Pop();
-	}
-	lenghtPostfixForm = indexPostfix;
-	delete[] brackets;
-	return 0;
+	while (stack.TopElem() != 'a')
+		PostfixForm[j++] = stack.Get();
+	PostfixForm[j++] = ' ';
+	cout << PostfixForm;
+	return 1;
 }
 
 double TFormula::FormulaCalculator()
 {
-	if (lenghtPostfixForm == 0)
-		FormulaConverter();
-	TStack st(lenghtPostfixForm);
-	int oper1 = 0, oper2 = 0;
-	int chislo = 0;
-	int coefRank = -10; // êîýôô óìíîæåíèÿ äëÿ ðàçðÿäà ÷èñëà
-	for (int i = 0; i < lenghtPostfixForm; i++)
+	FormulaConverter();
+	int i = 0;
+	double DoubleStack[MaxLen];
+	int top = -1;
+	while (PostfixForm[i])
 	{
-		bool flagLoopDigit = false;
-		while ((i < lenghtFormula) && (isdigit(PostfixForm[i])))  //Áëîê Ïåðåâîäà ÷èñåë
+		if (PostfixForm[i] == ' ')
 		{
-			coefRank += 10;
-			chislo *= coefRank;
-			chislo += PostfixForm[i] - '0';
 			i++;
-			flagLoopDigit = true;
+			continue;
 		}
-		if (flagLoopDigit)
+		if ((PostfixForm[i] >= '0') && (PostfixForm[i] <= '9'))
 		{
-			st.Put(chislo);
-			chislo = 0;
-			coefRank = -10;
+			DoubleStack[++top] = atof(PostfixForm + i);
+			while (PostfixForm[i] != ' ')
+				i++;
+			i++;
+			continue;
 		}
-		if (PostfixForm[i] == '+')
+		double t1 = DoubleStack[top--];
+		double t2 = DoubleStack[top--];
+		if (top < -1)
+			throw - 1;
+		switch (PostfixForm[i])
 		{
-			oper2 = st.Get();
-			st.Pop();
-			oper1 = st.Get();
-			st.Pop();
-			st.Put(oper1 + oper2);
+		case '+':
+			DoubleStack[++top] = t2 + t1;
+			break;
+		case '-':
+			DoubleStack[++top] = t2 - t1;
+			break;
+		case '*':
+			DoubleStack[++top] = t2 * t1;
+			break;
+		case '/':
+			DoubleStack[++top] = t2 / t1;
+			break;
+		default:
+			break;
 		}
-		else if (PostfixForm[i] == '-')
-		{
-			oper2 = st.Get();
-			st.Pop();
-			oper1 = st.Get();
-			st.Pop();
-			st.Put(oper1 - oper2);
-
-		}
-		else if (PostfixForm[i] == '*')
-		{
-			oper2 = st.Get();
-			st.Pop();
-			oper1 = st.Get();
-			st.Pop();
-			st.Put(oper1 * oper2);
-		}
-		else if (PostfixForm[i] == '/')
-		{
-			oper2 = st.Get();
-			if (oper2 == 0)
-				throw "devide by zero";
-			st.Pop();
-			oper1 = st.Get();
-			st.Pop();
-			st.Put(oper1 / oper2);
-		}
-
+		i++;
 	}
-	return st.Get();
-}
+	cout << " = " << DoubleStack[top];
+	return DoubleStack[top];;
 
-int PriorityOper(char sign)
-{
-	switch (sign)
-	{
-	case '(':
-		return 0;
-		break;
-	case')':
-		return 1;
-		break;
-	case '+':
-		return 2;
-		break;
-	case '-':
-		return 2;
-		break;
-	case '*':
-		return 3;
-		break;
-	case '/':
-		return 3;
-		break;
-	}
 }

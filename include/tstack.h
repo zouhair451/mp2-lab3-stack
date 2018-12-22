@@ -1,21 +1,16 @@
-#pragma once
-#include"tdataroot.h"
-class TStack : public TDataRoot
+#include "tdataroot.h"
+
+class TStack :public TDataRoot
 {
-protected:
-	int top; 
-	int* mem;
+private:
+	int top;
 public:
-	TStack(int len);
-	TStack(const TStack& obj);
+	TStack(int Size = DefMemSize);
 	~TStack() {};
-	int GetSize() { return MemSize; }
-	void Put(const TData &elem);
+	void Put(const TData &Val);
 	TData Get();
-	void Pop();
-	void Resize(int newLen);
-	bool IsEmpty() const { return top == -1; }
-	bool IsFull() const { return top == MemSize - 1; }
-	virtual int  IsValid();                 
-	virtual void Print();             
+	virtual TData TopElem();
+
+	int IsValid();
+	void Print();
 };

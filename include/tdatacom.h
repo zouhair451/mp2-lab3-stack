@@ -15,18 +15,18 @@
 class TDataCom
 {
 protected:
-  int RetCode; // Код завершения
+	int RetCode; // Код завершения
 
-  int SetRetCode(int ret) { return RetCode = ret; }
+	int SetRetCode(int ret) { return RetCode = ret; }
 public:
-  TDataCom(): RetCode(DataOK) {}
-  virtual ~TDataCom() {}
-  int GetRetCode()
-  {
-    int temp = RetCode;
-    RetCode = DataOK;
-    return temp;
-  }
+	TDataCom() : RetCode(DataOK) {}
+	virtual ~TDataCom() {}
+	int GetRetCode()
+	{
+		int temp = RetCode;
+		RetCode = DataOK;
+		return temp;
+	}
 };
 
 #endif

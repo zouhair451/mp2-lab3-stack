@@ -1,175 +1,123 @@
-#include<gtest.h>
-#include"tstack.h"
-#include"tformula.h"
-TEST(TStack, can_create_stack_with_positive_length)
+#include "tformula.h"
+#include "tstack.h"
+#include "gtest.h"
+
+TEST(TStack, can_create_Stack)
 {
-	ASSERT_NO_THROW(TStack(5));
+	ASSERT_NO_THROW(TStack st(10));
 }
-TEST(TStack, cant_create_stack_with_negative_length)
+
+TEST(TStack, cannot_create_Stack_with_negativ_length)
 {
-	ASSERT_ANY_THROW(TStack(-1));
+	ASSERT_ANY_THROW(TStack st(-10));
 }
-TEST(TStack, can_create_copied_stack)
+
+TEST(TStack, can_put_elem)
 {
-	TStack temp(3);
-	ASSERT_NO_THROW(TStack st(temp));
+	TStack st(10);
+	ASSERT_NO_THROW(st.Put(3));
 }
-TEST(TStack, copied_stack_is_equal_to_source_one)
+
+TEST(TStack, can_get_elem)
 {
-	TStack temp(3);
-	temp.Put(4);
-	TStack st(temp);
-	EXPECT_EQ(temp.Get(), st.Get());
+	TStack st(10);
+	st.Put(1);
+	ASSERT_NO_THROW(st.Get());
 }
-TEST(TStack, copied_stack_have_its_own_memory)
+
+TEST(TStack, can_get_elem_is_correct)
 {
-	TStack temp(3);
-	temp.Put(4);
-	TStack st(temp);
-	EXPECT_NE(&temp, &st);
+	TStack st(10);
+	st.Put(1);
+	EXPECT_EQ(1, st.Get());
 }
-TEST(TStack, can_stack_get_its_size)
+
+TEST(TStack, retcode_when_stack_empty)
 {
-	TStack temp(3);
-	temp.Put(4);
-	EXPECT_EQ(3, temp.GetSize());
+	TStack St(10);
+	St.Get();
+	EXPECT_EQ(DataEmpty, St.GetRetCode());
 }
-TEST(TStack, can_get_and_set_element)
+
+TEST(TStack, can_change_retcode_when_put_in_full_tstack)
 {
-	TStack temp(3);
-	temp.Put(4);
-	EXPECT_EQ(4, temp.Get());
+	TStack St(2);
+	St.Put(1);
+	St.Put(2);
+	St.Put(3);
+	ASSERT_EQ(DataFull, St.GetRetCode());
 }
-TEST(TStack, cant_get_elment_from_empty_stack)
+
+TEST(TStack, top_elememt_after_put_element)
 {
-	TStack temp(4);
-	ASSERT_ANY_THROW(temp.Get());
+	TStack St(10);
+	St.Put(1);
+	St.Put(5);
+	ASSERT_EQ(5, St.TopElem());
 }
-TEST(TStack, cant_pop_elment_from_empty_stack)
+
+TEST(TStack, top_element_cant_change_when_put_element_in_full_stack)
 {
-	TStack temp(4);
-	ASSERT_ANY_THROW(temp.Pop());
+	TStack St(2);
+	St.Put(1);
+	St.Put(2);
+	St.Put(3);
+	ASSERT_EQ(2, St.TopElem());
 }
-TEST(TStack, cant_get_elment_from_stack_without_mem)
+
+TEST(TFormula, can_create_formula)
 {
-	TStack temp(0);
-	ASSERT_ANY_THROW(temp.Get());
+	ASSERT_NO_THROW(TFormula f("(1+2)"));
 }
-TEST(TStack, cant_pop_elment_from_stack_without_mem)
+
+TEST(TFormula, can_check_formula)
 {
-	TStack temp(0);
-	ASSERT_ANY_THROW(temp.Pop());
+	TFormula f("(1+2)*((3-4)/(5+6))+7");
+	int br[255];
+	ASSERT_NO_THROW(f.FormulaChecker(br, 255));
 }
-TEST(TStack, can_pop_element)
+
+TEST(TFormula, check_wrong_brackets)
 {
-	TStack temp(3);
-	temp.Put(4);
-	temp.Put(1);
-	temp.Pop();
-	EXPECT_NE(1, temp.Get());
+	TFormula f("(1*2)+((3-4");
+	int br[4] = { 0 };
+	EXPECT_EQ(1, f.FormulaChecker(br, 4));
 }
-TEST(TStack, can_get_its_size)
+
+TEST(TFormula, check_right_brackets)
 {
-	TStack temp(3);
-	temp.Put(4);
-	EXPECT_EQ(3, temp.GetSize());
+	TFormula f("1*2+3-4");
+	int br[4] = { 0 };
+	EXPECT_EQ(0, f.FormulaChecker(br, 4));
 }
-TEST(TStack, can_detect_if_stack_is_empty)
+
+TEST(TFormula, can_calculate_formula)
 {
-	TStack temp(3);
-	EXPECT_EQ(1, temp.IsEmpty());
+	TFormula f("(1*2)+(3-4)");
+	EXPECT_EQ(1, f.FormulaCalculator());
 }
-TEST(TStack, can_detect_if_stack_is_not_empty)
+
+TEST(TFormula, add_integer)
 {
-	TStack temp(3);
-	temp.Put(11);
-	EXPECT_EQ(0, temp.IsEmpty());
+	TFormula f("23+32");
+	EXPECT_DOUBLE_EQ(55.0, f.FormulaCalculator());
 }
-TEST(TStack, can_detect_if_stack_is_not_full)
+
+TEST(TFormula, sub_integer)
 {
-	TStack temp(3);
-	temp.Put(11);
-	EXPECT_EQ(0, temp.IsFull());
+	TFormula f("23-32");
+	EXPECT_DOUBLE_EQ(-9, f.FormulaCalculator());
 }
-TEST(TStack, can_detect_if_stack_is_full)
+
+TEST(TFormula, multi_integer)
 {
-	TStack temp(1);
-	temp.Put(8);
-	EXPECT_EQ(1, temp.IsFull());
+	TFormula f("23*32");
+	EXPECT_DOUBLE_EQ(736, f.FormulaCalculator());
 }
-TEST(TStack, pop_throws_when_stack_is_empty)
+
+TEST(TFormula, div_integer)
 {
-	TStack temp(3);
-	ASSERT_ANY_THROW(temp.Pop());
+	TFormula f("32/64");
+	EXPECT_DOUBLE_EQ(0.5, f.FormulaCalculator());
 }
-TEST(TStack, put_throws_when_stack_is_full)
-{
-	TStack temp(2);
-	temp.Put(10);
-	temp.Put(12);
-	ASSERT_ANY_THROW(temp.Put(1));
-}
-TEST(TStack, can_resize_stack)
-{
-	TStack temp(3);
-	temp.Resize(6);
-	for (int i = 0; i < 6; i++)
-		temp.Put(i);
-	EXPECT_EQ(6, temp.GetSize());
-}
-TEST(TStack, can_resize_stack_to_zero)
-{
-	TStack temp(3);
-	temp.Resize(0);
-	EXPECT_EQ(0, temp.GetSize());
-}
-TEST(TStack, stack_is_valid)
-{
-	TStack temp(3);
-	temp.Resize(6);
-	for (int i = 0; i < 6; i++)
-		temp.Put(i);
-	EXPECT_EQ(1, temp.IsValid());
-}
-TEST(TStack, can_print_values)
-{
-	TStack temp(3);
-	for (int i = 0; i < 3; i++)
-		temp.Put(i);
-	ASSERT_NO_THROW(temp.Print());
-}
-TEST(TFormula, can_check_proper_formula)
-{
-	std::string str1 = "(2+3)*6*4/8-(2+5)/16";
-	int size = str1.length() * 2;
-	int* brackets = new int[size];
-	TFormula f(str1);
-	EXPECT_EQ(0, f.FormulaChecker(brackets, size));
-	delete[] brackets;
-}
-TEST(TFormula, can_check_wrong_formula)
-{
-	std::string str1 = "(2+3)*6*4/8-(2+5)/16))";
-	int size = str1.length() * 2;
-	int* brackets = new int[size];
-	TFormula f(str1);
-	EXPECT_EQ(2, f.FormulaChecker(brackets, size));
-	delete[] brackets;
-}
-TEST(TFormula, can_calculate_proper_formula)
-{
-	std::string str1 = "(2+3)*6*4/8-(2+5)/16";
-	TFormula f(str1);
-	EXPECT_EQ(0, f.FormulaConverter());
-}
-TEST(TFormula, throw_when_calculate_wrong_formula)
-{
-	std::string str1 = "))(2+3)*6*4/8-(2+5)/16))";
-	TFormula f(str1);
-	ASSERT_ANY_THROW(f.FormulaCalculator());
-}
-TEST(TFormula, throw_when_create_empty_formula)
-{
-	std::string str1 = "";
-	ASSERT_ANY_THROW(TFormula f((char*)str1.c_str()));
 }

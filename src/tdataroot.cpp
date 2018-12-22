@@ -11,8 +11,6 @@
 
 TDataRoot::TDataRoot(int Size) : TDataCom()
 {
-	if (Size < 0)
-		throw "Wrong size";
 	DataCount = 0;
 	MemSize = Size;
 	if (Size == 0) // память будет установлена методом SetMem
