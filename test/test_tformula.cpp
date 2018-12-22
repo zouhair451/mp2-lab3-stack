@@ -1,108 +1,206 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "tformula.h"
-#include "gtest.h"
+#include "tstack.h"
+#include <cstring>
+#include <iostream>
 
-TEST(TFormula, can_check_formula)
+TFormula::TFormula(char *form)
 {
-  TFormula f("(1*2)+((3-4*5)/(6-7))+(8*9)");
-  int Br[255];
-  ASSERT_NO_THROW(f.FormulaChecker(Br, 255));
+  if (form != "")
+  {
+    std::strcpy(Formula, form);
+    std::strcpy(PostfixForm, "");
+    
+    int i = 0;
+    int bracketCount = 0;
+    int closeBracket = 0;
+    int openBracket = 0;
+    while (Formula[i] != '\0')
+    {
+      if (Formula[i] == '(')
+      {
+        openBracket++;
+        bracketCount++;
+      }
+      else if (Formula[i] == ')')
+      {
+        closeBracket++;
+        bracketCount++;
+      }
+      
+      i++;
+    }
+    
+    for (int i = 0; i < closeBracket - openBracket; i++)
+      bracketCount++;
+    
+    for (int i = 0; i < openBracket - closeBracket; i++)
+      bracketCount++;
+    
+    int brackets[255];
+    if (FormulaChecker(brackets, 255) != 0)
+    {
+      for (int i = 0; i < bracketCount; i += 2)
+        std::cout << brackets[i] + 1 << " | " << brackets[i + 1] + 1 << std::endl;
+    }
+    else
+    {
+      this->FormulaConverter();
+    }
+  }
 }
-
-TEST(TFormula, formula_checker_is_correct)
+/*------------------------------------------------------------------------------*/
+int TFormula::FormulaChecker(int brackets[], int size)
 {
-  TFormula f("(1*2)+((3-4");
-  int Br1[] = {1,2,0,0};
-  int Br2[10];
-  f.FormulaChecker(Br2, 30);
-  for (int i = 0; i<4; i++)
-    ASSERT_EQ(Br1[i], Br2[i]);
-}
-
-TEST(TFormula, can_check_formula_without_brackets)
-{
-  TFormula f("1 + 2");
-  int Br[10];
-  ASSERT_NO_THROW(f.FormulaChecker(Br, 30););
+  TStack mstack(size);
   
+  int bracketsCount = 0;
+  int i = 0;
+  int errors = 0;
+  int bracketIndex = 0;
+  while (Formula[i] != '\0')
+  {
+    if (Formula[i] == '(')
+      mstack.Put(bracketIndex++);
+    
+    else if (Formula[i] == ')')
+    {
+      if (mstack.IsEmpty())
+      {
+        brackets[bracketsCount++] = -1;
+        brackets[bracketsCount++] = bracketIndex++;
+        errors++;
+      }
+      
+      else
+      {
+        brackets[bracketsCount++] = mstack.Get();
+        brackets[bracketsCount++] = bracketIndex++;
+      }
+    }
+    
+    i++;
+  }
+  
+  while (!mstack.IsEmpty())
+  {
+    brackets[bracketsCount++] = mstack.Get();
+    brackets[bracketsCount++] = -1;
+    errors++;
+  }
+  
+  return errors;
 }
-
-TEST(TFormula, can_convert_empty_formul)
+/*------------------------------------------------------------------------------*/
+bool TFormula::IsOperator(char str)
 {
-  TFormula f("");
-  ASSERT_NO_THROW(f.FormulaConverter());
+  return (str == '*' || str == '/'
+          || str == '+' || str == '-');
 }
-
-TEST(TFormula, cant_convert_formul_with_wrong_symbols)
+/*------------------------------------------------------------------------------*/
+int TFormula::Priority(char str)
 {
-  TFormula f("dgsdsh");
-  ASSERT_ANY_THROW(f.FormulaConverter());
+  if (str == '*' || str == '/') return 2;
+  if (str == '+' || str == '-') return 1;
+  return 0;
 }
-
-
-TEST(TFormula, can_calculate_sum)
+/*------------------------------------------------------------------------------*/
+int TFormula::FormulaConverter()
 {
-  TFormula f("2+1");
-  ASSERT_DOUBLE_EQ(3, f.FormulaCalculator());
+  TStack mstack(255);
+  
+  int i = 0;
+  int postFix = 0;
+  while (Formula[i] != '\0')
+  {
+    if (isdigit(Formula[i]))
+    {
+      while (isdigit(Formula[i]))
+      {
+        PostfixForm[postFix++] = Formula[i];
+        i++;
+      }
+      PostfixForm[postFix++] = ' ';
+      i--;
+    }
+    
+    else if (IsOperator(Formula[i]))
+    {
+      if (Priority(Formula[i]) > Priority(mstack.TopElem()) || Priority(Formula[i]) == 0 || mstack.IsEmpty())
+        mstack.Put(Formula[i]);
+      
+      else
+      {
+        while (!mstack.IsEmpty() && Priority(mstack.TopElem()) >= Priority(Formula[i]) && mstack.TopElem() != '(')
+          PostfixForm[postFix++] = mstack.Get();
+        
+        mstack.Put(Formula[i]);
+      }
+    }
+    
+    if (Formula[i] == '(')
+      mstack.Put(Formula[i]);
+    
+    if (Formula[i] == ')')
+    {
+      while (!mstack.IsEmpty())
+      {
+        if (mstack.TopElem() != '(')
+          PostfixForm[postFix++] = mstack.Get();
+        
+        else
+        {
+          mstack.Get();
+          break;
+        }
+      }
+    }
+    
+    i++;
+  }
+  
+  while (!mstack.IsEmpty())
+    PostfixForm[postFix++] = mstack.Get();
+  PostfixForm[postFix] = '\0';
+  
+  return 0;
 }
-
-
-TEST(TFormula, can_calculate_difference)
+/*------------------------------------------------------------------------------*/
+double TFormula::FormulaCalculator()
 {
-  TFormula f("10-3");
-  ASSERT_DOUBLE_EQ(7, f.FormulaCalculator());
+  TStack mstack(255);
+  
+  int i = 0;
+  while (PostfixForm[i] != '\0')
+  {
+    if (isdigit(PostfixForm[i]))
+      mstack.Put(PostfixForm[i] - '0');
+    
+    else if (IsOperator(PostfixForm[i]))
+    {
+      int rigthOperator = mstack.Get();
+      int leftOperator = mstack.Get();
+      
+      switch (PostfixForm[i])
+      {
+        case'*':
+          mstack.Put(leftOperator * rigthOperator);
+          break;
+        case '/':
+          mstack.Put(leftOperator / rigthOperator);
+          break;
+        case '+':
+          mstack.Put(leftOperator + rigthOperator);
+          break;
+        case '-':
+          mstack.Put(leftOperator - rigthOperator);
+          break;
+      }
+    }
+    
+    i++;
+  }
+  
+  return mstack.Get();
 }
-
-TEST(TFormula, can_calculate_multipling)
-{
-  TFormula f("3*2");
-  ASSERT_DOUBLE_EQ(6, f.FormulaCalculator());
-}
-
-TEST(TFormula, can_calculate_divide)
-{
-  TFormula f("50/5");
-  ASSERT_DOUBLE_EQ(10, f.FormulaCalculator());
-}
-
-TEST(TFormula, can_calculate_sum_with_brackets)
-{
-  TFormula f("(1+2)+(3+4)");
-  ASSERT_DOUBLE_EQ(10, f.FormulaCalculator());
-}
-
-TEST(TFormula, can_calculate_diff_with_brackets)
-{
-  TFormula f("(5-4)-(3-2)");
-  ASSERT_DOUBLE_EQ(0, f.FormulaCalculator());
-}
-
-TEST(TFormula, can_calculate_multiplying_with_brackets)
-{
-  TFormula f("(2*3)*(1*5)");
-  ASSERT_DOUBLE_EQ(30, f.FormulaCalculator());
-}
-
-TEST(TFormula, can_divide_with_brackets)
-{
-  TFormula f("(10/2)/(25/5)");
-  EXPECT_DOUBLE_EQ(1, f.FormulaCalculator());
-}
-
-TEST(TFormula, can_calculate_multiple_operators)
-{
-  TFormula f("10+5*3-5/5");
-  EXPECT_DOUBLE_EQ(24, f.FormulaCalculator());
-}
-
-TEST(TFormula, can_calculate_multiple_different_with_brackets)
-{
-  TFormula f("(10+5)*3-5/5");
-  EXPECT_DOUBLE_EQ(44, f.FormulaCalculator());
-}
-
-
-TEST(TFormula, cant_calculate_formula_with_wrong_symbols)
-{
-  TFormula f("fghdfigh");
-  ASSERT_ANY_THROW(f.FormulaCalculator());
-}
+/*------------------------------------------------------------------------------*/
