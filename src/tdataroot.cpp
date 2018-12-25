@@ -7,12 +7,17 @@
 //   память выделяется динамически или задается методом SetMem
 
 #include <stdio.h>
+#include <stdexcept>
 #include "tdataroot.h"
 
 TDataRoot::TDataRoot(int Size): TDataCom()
 {
+  if (Size < 0)
+    throw std::logic_error("Unexpected size");
+
   DataCount = 0;
   MemSize = Size;
+  
   if (Size == 0) // память будет установлена методом SetMem
   {
     pMem = NULL;
@@ -20,7 +25,7 @@ TDataRoot::TDataRoot(int Size): TDataCom()
   }
   else // память выделяется объектом
   {
-    pMem = new TElem[MemSize];
+    pMem = new TElem[MemSize]{};
     MemType = MEM_HOLDER;
   }
 } /*-------------------------------------------------------------------------*/

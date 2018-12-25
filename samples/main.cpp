@@ -6,7 +6,7 @@
 // Динамические структуры данных - тестирование стека
 
 #include <iostream>
-#include "tstack.h"
+#include "tformula.h"
 
 using namespace std;
 
@@ -15,17 +15,27 @@ int main()
   TStack st(2);
   int temp;
 
-  setlocale(LC_ALL, "Russian");
-  cout << "Тестирование программ поддержки структуры типа стека" << endl;
+  cout << "\033[91m\tStack testing\033[0m" << endl;
   for (int i = 0; i < 35; i++)
   {
-    st.Put(i);
-    cout << "Положили значение " << i << " Код " << st.GetRetCode() << endl;
+    try
+    {
+      st.Put(i);
+      cout << "\033[91m\tPut \033[0m" << i << "\033[91m Code \033[0m" << st.GetRetCode() << endl;
+    }
+    catch (const std::exception&)
+    {
+      continue;
+    }
   }
   while (!st.IsEmpty())
   {
     temp = st.Get();
-    cout << "Взяли значение " << temp << " Код " << st.GetRetCode() << endl;
+    cout << "\033[91m\tGot \033[0m" << temp << "\033[91m Code \033[0m" << st.GetRetCode() << endl;
   }
+  cout << endl << endl;
+
+  TFormula formula("((3+4)*6-3*(4-6))-5");
+  formula.FormulaCalculator();
   return 0;
 }

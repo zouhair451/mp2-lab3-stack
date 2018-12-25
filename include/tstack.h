@@ -1,3 +1,4 @@
+#pragma once
 #include "tdataroot.h"
 
 class TStack :public TDataRoot
