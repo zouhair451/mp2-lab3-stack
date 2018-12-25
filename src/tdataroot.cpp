@@ -1,52 +1,52 @@
-// РќРќР“РЈ, Р’РњРљ, РљСѓСЂСЃ "РњРµС‚РѕРґС‹ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ-2", РЎ++, РћРћРџ
+// ННГУ, ВМК, Курс "Методы программирования-2", С++, ООП
 //
-// tdataroot.cpp - Copyright (c) Р“РµСЂРіРµР»СЊ Р’.Рџ. 28.07.2000 (06.08)
-//   РџРµСЂРµСЂР°Р±РѕС‚Р°РЅРѕ РґР»СЏ Microsoft Visual Studio 2008 РЎС‹СЃРѕРµРІС‹Рј Рђ.Р’. (21.04.2015)
+// tdataroot.cpp - Copyright (c) Гергель В.П. 28.07.2000 (06.08)
+//   Переработано для Microsoft Visual Studio 2008 Сысоевым А.В. (21.04.2015)
 //
-// Р”РёРЅР°РјРёС‡РµСЃРєРёРµ СЃС‚СЂСѓРєС‚СѓСЂС‹ РґР°РЅРЅС‹С… - Р±Р°Р·РѕРІС‹Р№ (Р°Р±СЃС‚СЂР°РєС‚РЅС‹Р№) РєР»Р°СЃСЃ - РІРµСЂСЃРёСЏ 3.1
-//   РїР°РјСЏС‚СЊ РІС‹РґРµР»СЏРµС‚СЃСЏ РґРёРЅР°РјРёС‡РµСЃРєРё РёР»Рё Р·Р°РґР°РµС‚СЃСЏ РјРµС‚РѕРґРѕРј SetMem
+// Динамические структуры данных - базовый (абстрактный) класс - версия 3.1
+//   память выделяется динамически или задается методом SetMem
 
 #include <stdio.h>
 #include "tdataroot.h"
 
-TDataRoot::TDataRoot(int Size): TDataCom()
+TDataRoot::TDataRoot(int Size) : TDataCom()
 {
-  DataCount = 0;
-  MemSize = Size;
-  if (Size == 0) // РїР°РјСЏС‚СЊ Р±СѓРґРµС‚ СѓСЃС‚Р°РЅРѕРІР»РµРЅР° РјРµС‚РѕРґРѕРј SetMem
-  {
-    pMem = NULL;
-    MemType = MEM_RENTER;
-  }
-  else // РїР°РјСЏС‚СЊ РІС‹РґРµР»СЏРµС‚СЃСЏ РѕР±СЉРµРєС‚РѕРј
-  {
-    pMem = new TElem[MemSize];
-    MemType = MEM_HOLDER;
-  }
+	DataCount = 0;
+	MemSize = Size;
+	if (Size == 0) // память будет установлена методом SetMem
+	{
+		pMem = NULL;
+		MemType = MEM_RENTER;
+	}
+	else // память выделяется объектом
+	{
+		pMem = new TElem[MemSize];
+		MemType = MEM_HOLDER;
+	}
 } /*-------------------------------------------------------------------------*/
 
 TDataRoot::~TDataRoot()
 {
-  if (MemType == MEM_HOLDER)
-    delete [] pMem;
-  pMem = NULL;
+	if (MemType == MEM_HOLDER)
+		delete[] pMem;
+	pMem = NULL;
 } /*-------------------------------------------------------------------------*/
 
-void TDataRoot::SetMem(void *p, int Size) // Р·Р°РґР°РЅРёРµ РїР°РјСЏС‚Рё
+void TDataRoot::SetMem(void *p, int Size) // задание памяти
 {
-  if (MemType == MEM_HOLDER)
-    delete [] pMem; // ! РёРЅС„РѕСЂРјР°С†РёСЏ РЅРµ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ
-  pMem = (TElem*) p;
-  MemType = MEM_RENTER;
-  MemSize = Size;
+	if (MemType == MEM_HOLDER)
+		delete[] pMem; // ! информация не сохраняется
+	pMem = (TElem*)p;
+	MemType = MEM_RENTER;
+	MemSize = Size;
 } /*-------------------------------------------------------------------------*/
 
-bool TDataRoot::IsEmpty(void) const // РєРѕРЅС‚СЂРѕР»СЊ РїСѓСЃС‚РѕС‚С‹ РЎР”
+bool TDataRoot::IsEmpty(void) const // контроль пустоты СД
 {
-  return DataCount == 0;
+	return DataCount == 0;
 } /*-------------------------------------------------------------------------*/
 
-bool TDataRoot::IsFull(void) const // РєРѕРЅС‚СЂРѕР»СЊ РїРµСЂРµРїРѕР»РЅРµРЅРёСЏ РЎР”
+bool TDataRoot::IsFull(void) const // контроль переполнения СД
 {
-  return DataCount == MemSize;
+	return DataCount == MemSize;
 } /*-------------------------------------------------------------------------*/
