@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include "tdataroot.h"
+//#include "C:\Users\1\Documents\Visual Studio 2015\Projects\mp2-lab3-stack\include\tdataroot.h"
 
 TDataRoot::TDataRoot(int Size): TDataCom()
 {
