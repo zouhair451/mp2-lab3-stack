@@ -1,3 +1,5 @@
+#include "tstack.h"
+
 const int MaxLen=255;
 
 class TFormula
