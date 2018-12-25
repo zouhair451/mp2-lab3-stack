@@ -12,20 +12,20 @@ using namespace std;
 
 int main()
 {
-  TStack st(2);
-  int temp;
+	TStack st(2);
+	int temp;
 
-  setlocale(LC_ALL, "Russian");
-  cout << "Тестирование программ поддержки структуры типа стека" << endl;
-  for (int i = 0; i < 35; i++)
-  {
-    st.Put(i);
-    cout << "Положили значение " << i << " Код " << st.GetRetCode() << endl;
-  }
-  while (!st.IsEmpty())
-  {
-    temp = st.Get();
-    cout << "Взяли значение " << temp << " Код " << st.GetRetCode() << endl;
-  }
-  return 0;
+	setlocale(LC_ALL, "Russian");
+	cout << "Тестирование программ поддержки структуры типа стека" << endl;
+	for (int i = 0; i < 35; i++)
+	{
+		st.Put(i);
+		cout << "Положили значение " << i << " Код " << st.GetRetCode() << endl;
+	}
+	while (!st.IsEmpty())
+	{
+		temp = st.Get();
+		cout << "Взяли значение " << temp << " Код " << st.GetRetCode() << endl;
+	}
+	return 0;
 }
