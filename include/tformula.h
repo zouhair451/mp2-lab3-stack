@@ -10,4 +10,7 @@ class TFormula
      int FormulaChecker(int Brackets[],int size);     // проверка корректности скобок
      int FormulaConverter();                          // преобразование в постфиксную форму
      double FormulaCalculator();                      // вычисление формулы
+
+	 bool IsOperator(char str);                                               // проверка оператора
+	 int Priority(char str);                                                  // приоритет операции
 };
