@@ -13,7 +13,11 @@ TDataRoot::TDataRoot(int Size): TDataCom()
 {
   DataCount = 0;
   MemSize = Size;
-  if (Size == 0) // память будет установлена методом SetMem
+  if(Size < 0)
+  {
+    SetRetCode(DataNoMem);
+  }
+  else if (Size == 0) // память будет установлена методом SetMem
   {
     pMem = NULL;
     MemType = MEM_RENTER;
@@ -29,7 +33,6 @@ TDataRoot::~TDataRoot()
 {
   if (MemType == MEM_HOLDER)
     delete [] pMem;
-  pMem = NULL;
 } /*-------------------------------------------------------------------------*/
 
 void TDataRoot::SetMem(void *p, int Size) // задание памяти
