@@ -12,7 +12,6 @@
 #include "tdatacom.h"
 
 #define DefMemSize   25  // размер памяти по умолчанию
-
 #define DataEmpty  -101  // СД пуста
 #define DataFull   -102  // СД переполнена
 #define DataNoMem  -103  // нет памяти
