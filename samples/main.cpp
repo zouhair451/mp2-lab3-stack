@@ -6,26 +6,41 @@
 // Динамические структуры данных - тестирование стека
 
 #include <iostream>
-#include "tstack.h"
-
+#include<string>
+#include "../include/tstack.h"
+#include"../include/tformula.h"
 using namespace std;
 
 int main()
 {
-  TStack st(2);
-  int temp;
-
-  setlocale(LC_ALL, "Russian");
-  cout << "Тестирование программ поддержки структуры типа стека" << endl;
-  for (int i = 0; i < 35; i++)
-  {
-    st.Put(i);
-    cout << "Положили значение " << i << " Код " << st.GetRetCode() << endl;
-  }
-  while (!st.IsEmpty())
-  {
-    temp = st.Get();
-    cout << "Взяли значение " << temp << " Код " << st.GetRetCode() << endl;
-  }
+	setlocale(LC_ALL, "russian");
+	cout << "Testing Class TFormula: " << endl;
+	string str1[4] = { "(2+3)*6*4/8-(2+5)/16","2+2*(6-3)/4","7+(3*10)-2","15/5-3+8" };
+	int size = 0;
+	int* brackets = nullptr;
+	TFormula * f = new TFormula[4]
+	{
+		str1[0], 
+		str1[1], 
+		str1[2],
+		str1[3]
+	};
+	for (int i = 0; i < 4; i++)
+	{
+		cout << "Formula " << i + 1 << ": " << str1[i] << endl;
+		size = str1[i].length() * 2; 
+		if (brackets != nullptr)
+			delete[] brackets;
+		brackets = new int[size];
+		for (int i = 0; i < size; i++)
+			brackets[i] = 0;
+		cout << "\nresult of calculation = " << f[i].FormulaCalculator() << endl;
+		for (int i = 0; i < 30; i++)
+			cout << "*";
+		cout << endl;
+	}
+	delete[] brackets;
+	delete[] f;
+	system("pause");
   return 0;
 }
