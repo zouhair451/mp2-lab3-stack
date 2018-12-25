@@ -11,6 +11,8 @@
 #define DataOK   0
 #define DataErr -1
 
+#include <iostream>
+
 // TDataCom является общим базовым классом
 class TDataCom
 {
